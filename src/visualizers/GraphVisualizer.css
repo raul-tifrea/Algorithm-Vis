@@ -1,0 +1,150 @@
+.graph-vis { display: flex; flex-direction: column; gap: 20px; }
+
+.code-toggle.active {
+  color: var(--neon-blue);
+  border-color: rgba(0,212,255,0.3);
+  background: rgba(0,212,255,0.06);
+}
+
+.graph-controls { display: flex; flex-direction: column; gap: 10px; }
+.graph-desc { font-size: 0.88rem; color: var(--text-muted); }
+
+.graph-main {
+  display: grid;
+  grid-template-columns: 1fr 220px;
+  gap: 20px;
+  align-items: start;
+}
+
+.graph-canvas {
+  padding: 12px;
+  min-height: 460px;
+}
+
+/* Edges */
+.graph-edge {
+  stroke: var(--border);
+  stroke-width: 2;
+  transition: stroke 0.3s ease, stroke-width 0.3s ease;
+}
+.graph-edge.active {
+  stroke: rgba(0, 212, 255, 0.4);
+  stroke-width: 3;
+}
+
+/* Nodes */
+.graph-node circle {
+  fill: var(--bg-secondary);
+  stroke: var(--border);
+  stroke-width: 2;
+  transition: all 0.3s ease;
+}
+.graph-node text {
+  fill: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  transition: fill 0.3s ease;
+}
+
+.graph-node.visited circle { fill: rgba(0,212,255,0.12); stroke: var(--neon-blue); }
+.graph-node.visited text   { fill: var(--neon-blue); }
+
+.graph-node.frontier circle {
+  fill: rgba(255,214,10,0.15);
+  stroke: var(--neon-yellow);
+  stroke-width: 2.5;
+}
+.graph-node.frontier text { fill: var(--neon-yellow); }
+
+.graph-node.current circle {
+  fill: rgba(0,212,255,0.3);
+  stroke: var(--neon-blue);
+  stroke-width: 3.5;
+  filter: drop-shadow(0 0 12px rgba(0,212,255,0.8));
+}
+.graph-node.current text { fill: #fff; }
+
+/* Side */
+.graph-side { display: flex; flex-direction: column; gap: 16px; }
+
+.graph-panel h3, .graph-legend h3 {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.struct-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  max-height: 130px;
+  overflow-y: auto;
+}
+.struct-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  transition: all 0.2s;
+}
+.struct-item.current { border-color: var(--neon-blue); background: rgba(0,212,255,0.08); }
+.struct-idx { font-size: 0.7rem; color: var(--text-dim); font-family: var(--font-mono); min-width: 18px; }
+.struct-val { font-family: var(--font-mono); font-size: 0.9rem; font-weight: 700; color: var(--neon-blue); }
+
+.empty-log { font-size: 0.8rem; color: var(--text-dim); }
+
+.graph-legend .legend-items { display: flex; flex-direction: column; gap: 7px; }
+.legend-item  { display: flex; align-items: center; gap: 8px; font-size: 0.82rem; color: var(--text-muted); }
+.gleg {
+  width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0;
+  border: 2px solid;
+}
+.gleg.default  { background: var(--bg-secondary); border-color: var(--border); }
+.gleg.frontier { background: rgba(255,214,10,0.2); border-color: var(--neon-yellow); }
+.gleg.current  { background: rgba(0,212,255,0.3); border-color: var(--neon-blue); }
+.gleg.visited  { background: rgba(0,212,255,0.12); border-color: var(--neon-blue); }
+
+@media (max-width: 768px) {
+  .graph-main { grid-template-columns: 1fr; }
+}
+
+/* ─── Code Panel ────────────────────────────────────────── */
+.graph-code-panel {
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Shared .code-panel-header, .code-panel-title, .code-block
+   and token classes are defined in TreeVisualizer.css.
+   Both pages load both files via their page, so styles are available.
+   Redeclare here to be self-contained: */
+.graph-code-panel .code-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(0,0,0,0.2);
+}
+.graph-code-panel .code-panel-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+}
+.graph-code-panel .code-block {
+  margin: 0;
+  padding: 20px 22px;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  line-height: 1.8;
+  color: #abb2bf;
+  white-space: pre;
+  overflow-x: auto;
+  background: transparent;
+}

@@ -1,0 +1,164 @@
+.sort-vis {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Controls */
+.sort-controls { display: flex; flex-direction: column; gap: 12px; }
+.step-info { font-size: 0.82rem; color: var(--text-muted); }
+
+/* Canvas */
+.sort-canvas { padding: 24px 16px 16px; }
+.bars-container {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 2px;
+  height: 340px;
+  width: 100%;
+  padding-bottom: 26px;
+}
+
+.bar {
+  flex: 1;
+  min-width: 3px;
+  max-width: 40px;
+  border-radius: 3px 3px 0 0;
+  position: relative;
+  transition: height 0.05s ease, background 0.12s ease;
+}
+
+.bar-default   { background: linear-gradient(to top, #3a3a6e, #5a5a9e); }
+.bar-comparing { background: linear-gradient(to top, #b45309, var(--neon-yellow)); box-shadow: 0 0 10px rgba(255,214,10,0.4); }
+.bar-swapped   { background: linear-gradient(to top, #991b1b, var(--neon-red)); box-shadow: 0 0 10px rgba(255,71,87,0.5); }
+.bar-pivot     { background: linear-gradient(to top, #6d28d9, var(--neon-purple)); box-shadow: 0 0 10px rgba(139,92,246,0.5); }
+.bar-sorted    { background: linear-gradient(to top, #065f46, var(--neon-green)); box-shadow: 0 0 8px rgba(0,255,136,0.3); }
+
+.bar-label {
+  position: absolute;
+  bottom: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  letter-spacing: -0.02em;
+}
+
+/* Body layout (canvas + optional code panel) */
+.sort-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.sort-body.with-code {
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 20px;
+  align-items: start;
+}
+
+/* Code toggle button active state */
+.code-toggle.active {
+  color: var(--neon-blue);
+  border-color: rgba(0,212,255,0.3);
+  background: rgba(0,212,255,0.06);
+}
+
+/* Code Panel */
+.code-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.code-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(0,0,0,0.2);
+}
+
+.code-panel-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+}
+
+.code-block {
+  margin: 0;
+  padding: 20px 18px;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  line-height: 1.75;
+  color: #abb2bf;
+  white-space: pre;
+  overflow-x: auto;
+  background: transparent;
+  border: none;
+  outline: none;
+}
+
+/* Syntax tokens */
+.tok-kw      { color: #c678dd; font-weight: 600; }
+.tok-comment { color: #5c6370; font-style: italic; }
+.tok-num     { color: #d19a66; }
+.tok-str     { color: #98c379; }
+
+/* Info row */
+.sort-info {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 16px;
+  align-items: start;
+}
+
+.info-step {
+  display: flex;
+  align-items: center;
+  font-size: 0.95rem;
+  color: var(--neon-blue);
+  font-family: var(--font-mono);
+  min-height: 60px;
+}
+
+.info-complexity h3,
+.info-legend h3 {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.info-complexity table { border-collapse: collapse; }
+.info-complexity td {
+  padding: 4px 12px 4px 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+.info-complexity td:first-child { font-weight: 500; color: var(--text-primary); }
+
+.legend-items { display: flex; flex-direction: column; gap: 8px; }
+.legend-item  { display: flex; align-items: center; gap: 8px; font-size: 0.82rem; color: var(--text-muted); }
+.legend-dot   { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+.legend-dot.default   { background: #5a5a9e; }
+.legend-dot.comparing { background: var(--neon-yellow); }
+.legend-dot.swapped   { background: var(--neon-red); }
+.legend-dot.pivot     { background: var(--neon-purple); }
+.legend-dot.sorted    { background: var(--neon-green); }
+
+@media (max-width: 1100px) {
+  .sort-body.with-code { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .sort-info { grid-template-columns: 1fr; }
+  .bars-container { height: 220px; }
+}
