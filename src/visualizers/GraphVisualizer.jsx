@@ -1,13 +1,13 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { bfsTraversal } from '../algorithms/graphs/bfs';
 import { dfsTraversal } from '../algorithms/graphs/dfs';
 import './GraphVisualizer.css';
 
 const NODES = [
-  { id: 'A', x: 350, y:  60 },
+  { id: 'A', x: 350, y: 60 },
   { id: 'B', x: 180, y: 160 },
   { id: 'C', x: 520, y: 160 },
-  { id: 'D', x:  80, y: 290 },
+  { id: 'D', x: 80, y: 290 },
   { id: 'E', x: 280, y: 290 },
   { id: 'F', x: 430, y: 290 },
   { id: 'G', x: 620, y: 290 },
@@ -16,12 +16,12 @@ const NODES = [
 ];
 
 const EDGES = [
-  ['A','B'], ['A','C'],
-  ['B','D'], ['B','E'],
-  ['C','F'], ['C','G'],
-  ['D','H'], ['E','H'],
-  ['F','I'], ['G','I'],
-  ['E','F'],
+  ['A', 'B'], ['A', 'C'],
+  ['B', 'D'], ['B', 'E'],
+  ['C', 'F'], ['C', 'G'],
+  ['D', 'H'], ['E', 'H'],
+  ['F', 'I'], ['G', 'I'],
+  ['E', 'F'],
 ];
 
 const ADJACENCY = {};
@@ -34,53 +34,44 @@ for (const [u, v] of EDGES) {
 const NODE_MAP = Object.fromEntries(NODES.map(n => [n.id, n]));
 
 const CODE_SNIPPETS = {
-  bfs: `function bfs(graph, start) {
-  const visited = new Set();
-  const queue   = [start];
-  const result  = [];
-
-  visited.add(start);
+  bfs: `function bfs(startNode) {
+  let queue = [startNode];
+  let visited = new Set([startNode]);
 
   while (queue.length > 0) {
-    const node = queue.shift();
-    result.push(node);
+    let node = queue.shift(); // Get FIRST item
+    console.log(node);
 
-    for (const neighbor of graph[node]) {
+    for (let neighbor of node.neighbors) {
       if (!visited.has(neighbor)) {
         visited.add(neighbor);
-        queue.push(neighbor);
+        queue.push(neighbor); // Add to END
       }
     }
   }
-  return result;
 }`,
 
-  dfs: `function dfs(graph, start) {
-  const visited = new Set();
-  const stack   = [start];
-  const result  = [];
+  dfs: `function dfs(startNode) {
+  let stack = [startNode];
+  let visited = new Set([startNode]);
 
   while (stack.length > 0) {
-    const node = stack.pop();
+    let node = stack.pop(); // Get LAST item
+    console.log(node);
 
-    if (visited.has(node)) continue;
-    visited.add(node);
-    result.push(node);
-
-    const neighbors = [...graph[node]].reverse();
-    for (const neighbor of neighbors) {
+    for (let neighbor of node.neighbors) {
       if (!visited.has(neighbor)) {
-        stack.push(neighbor);
+        visited.add(neighbor);
+        stack.push(neighbor); // Add to TOP
       }
     }
   }
-  return result;
 }`,
 };
 
 const ALGORITHMS = {
   bfs: { fn: bfsTraversal, label: 'BFS', fullLabel: 'Breadth-First Search', desc: 'Explores level by level using a queue', badge: 'badge-blue' },
-  dfs: { fn: dfsTraversal, label: 'DFS', fullLabel: 'Depth-First Search',   desc: 'Explores as deep as possible using a stack', badge: 'badge-purple' },
+  dfs: { fn: dfsTraversal, label: 'DFS', fullLabel: 'Depth-First Search', desc: 'Explores as deep as possible using a stack', badge: 'badge-purple' },
 };
 
 const START_NODE = 'A';
@@ -91,30 +82,31 @@ const R = 24;
 function highlight(code) {
   const keywords = /\b(function|return|const|let|if|else|while|for|of|new|continue|true|false)\b/g;
   const comments = /(\/\/[^\n]*)/g;
-  const numbers  = /\b(\d+)\b/g;
-  const strings  = /('[^']*'|"[^"]*")/g;
+  const numbers = /\b(\d+)\b/g;
+  const strings = /('[^']*'|"[^"]*")/g;
   return code
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    .replace(strings,  '<span class="tok-str">$1</span>')
+    .replace(strings, '<span class="tok-str">$1</span>')
     .replace(comments, '<span class="tok-comment">$1</span>')
     .replace(keywords, '<span class="tok-kw">$1</span>')
-    .replace(numbers,  '<span class="tok-num">$1</span>');
+    .replace(numbers, '<span class="tok-num">$1</span>');
 }
 
 export default function GraphVisualizer() {
-  const [algo, setAlgo]         = useState('bfs');
-  const [frames, setFrames]     = useState([]);
+  const [algo, setAlgo] = useState('bfs');
+  const [speed, setSpeed] = useState(50);
+  const [frames, setFrames] = useState([]);
   const [frameIdx, setFrameIdx] = useState(-1);
-  const [playing, setPlaying]   = useState(false);
-  const [done, setDone]         = useState(false);
-  const [showCode, setShowCode] = useState(true);
+  const [playing, setPlaying] = useState(false);
+  const [done, setDone] = useState(false);
+  const [showCode, setShowCode] = useState(false);
   const timerRef = useRef(null);
 
   const currentFrame = frames[frameIdx] ?? null;
-  const visited  = currentFrame?.visited  ?? new Set();
-  const current  = currentFrame?.current  ?? null;
+  const visited = currentFrame?.visited ?? new Set();
+  const current = currentFrame?.current ?? null;
   const frontier = currentFrame?.inQueue ?? currentFrame?.inStack ?? new Set();
-  const path     = currentFrame?.path ?? [];
+  const path = currentFrame?.path ?? [];
 
   const reset = useCallback(() => {
     clearInterval(timerRef.current);
@@ -125,21 +117,33 @@ export default function GraphVisualizer() {
   }, []);
 
   const play = useCallback(() => {
-    const f = ALGORITHMS[algo].fn(ADJACENCY, START_NODE);
-    setFrames(f);
-    let idx = -1;
-    setDone(false);
+    if (frames.length === 0 || done) {
+      const f = ALGORITHMS[algo].fn(ADJACENCY, START_NODE);
+      setFrames(f);
+      setFrameIdx(-1);
+      setDone(false);
+    }
     setPlaying(true);
-    timerRef.current = setInterval(() => {
-      idx++;
-      setFrameIdx(idx);
-      if (idx >= f.length - 1) {
-        clearInterval(timerRef.current);
-        setPlaying(false);
-        setDone(true);
-      }
-    }, 500);
-  }, [algo]);
+  }, [frames.length, done, algo]);
+
+  useEffect(() => {
+    if (playing) {
+      clearInterval(timerRef.current);
+      timerRef.current = setInterval(() => {
+        setFrameIdx(prev => {
+          const next = prev + 1;
+          if (next >= frames.length - 1) {
+            clearInterval(timerRef.current);
+            setPlaying(false);
+            setDone(true);
+            return frames.length - 1 > 0 ? frames.length - 1 : next;
+          }
+          return next;
+        });
+      }, Math.max(10, 1000 - speed * 9.9));
+    }
+    return () => clearInterval(timerRef.current);
+  }, [playing, speed, frames.length]);
 
   const step = useCallback(() => {
     let f = frames;
@@ -163,9 +167,9 @@ export default function GraphVisualizer() {
   }, [frames]);
 
   const getNodeState = (id) => {
-    if (id === current)   return 'current';
+    if (id === current) return 'current';
     if (frontier.has(id)) return 'frontier';
-    if (visited.has(id))  return 'visited';
+    if (visited.has(id)) return 'visited';
     return 'default';
   };
 
@@ -188,29 +192,34 @@ export default function GraphVisualizer() {
               {v.label}
             </button>
           ))}
+          <div className="ctrl-group" style={{ marginLeft: '12px' }}>
+            <label>Speed <span className="mono">{speed}%</span></label>
+            <input type="range" min={1} max={100} value={speed}
+              onChange={e => setSpeed(+e.target.value)} />
+          </div>
           <span className="ctrl-sep" />
           <div className="playback-btns">
             {!playing
               ? <button className="btn btn-primary btn-icon" onClick={play} disabled={done} title="Play">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5,3 19,12 5,21"/></svg>
-                </button>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5,3 19,12 5,21" /></svg>
+              </button>
               : <button className="btn btn-ghost btn-icon" onClick={() => { clearInterval(timerRef.current); setPlaying(false); }} title="Pause">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
-                </button>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><rect x="6" y="4" width="4" height="16" /><rect x="14" y="4" width="4" height="16" /></svg>
+              </button>
             }
             <button className="btn btn-ghost btn-icon" onClick={stepBack} disabled={playing || frameIdx <= 0} title="Step back">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="15,18 9,12 15,6"/><line x1="9" y1="18" x2="9" y2="6"/>
+                <polyline points="15,18 9,12 15,6" /><line x1="9" y1="18" x2="9" y2="6" />
               </svg>
             </button>
             <button className="btn btn-ghost btn-icon" onClick={step} disabled={playing || done} title="Step forward">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="9,18 15,12 9,6"/><line x1="15" y1="18" x2="15" y2="6"/>
+                <polyline points="9,18 15,12 9,6" /><line x1="15" y1="18" x2="15" y2="6" />
               </svg>
             </button>
             <button className="btn btn-ghost btn-icon" onClick={reset} title="Reset">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/>
+                <polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 .49-3.51" />
               </svg>
             </button>
           </div>
@@ -282,10 +291,10 @@ export default function GraphVisualizer() {
           <div className="card graph-legend">
             <h3>Legend</h3>
             <div className="legend-items">
-              <div className="legend-item"><span className="gleg default"/>Unvisited</div>
-              <div className="legend-item"><span className="gleg frontier"/>In {structLabel}</div>
-              <div className="legend-item"><span className="gleg current"/>Current</div>
-              <div className="legend-item"><span className="gleg visited"/>Visited</div>
+              <div className="legend-item"><span className="gleg default" />Unvisited</div>
+              <div className="legend-item"><span className="gleg frontier" />In {structLabel}</div>
+              <div className="legend-item"><span className="gleg current" />Current</div>
+              <div className="legend-item"><span className="gleg visited" />Visited</div>
             </div>
           </div>
         </div>

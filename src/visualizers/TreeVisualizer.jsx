@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import {
   inorderTraversal,
   preorderTraversal,
@@ -7,69 +7,48 @@ import {
 import './TreeVisualizer.css';
 
 const TREE_NODES = [
-  { id: 'n1',  value: 50,  left: 'n2',  right: 'n3'  },
-  { id: 'n2',  value: 30,  left: 'n4',  right: 'n5'  },
-  { id: 'n3',  value: 70,  left: 'n6',  right: 'n7'  },
-  { id: 'n4',  value: 20,  left: 'n8',  right: 'n9'  },
-  { id: 'n5',  value: 40,  left: null,  right: null  },
-  { id: 'n6',  value: 60,  left: null,  right: null  },
-  { id: 'n7',  value: 80,  left: 'n10', right: null  },
-  { id: 'n8',  value: 15,  left: null,  right: null  },
-  { id: 'n9',  value: 25,  left: null,  right: null  },
-  { id: 'n10', value: 75,  left: null,  right: null  },
+  { id: 'n1', value: 50, left: 'n2', right: 'n3' },
+  { id: 'n2', value: 30, left: 'n4', right: 'n5' },
+  { id: 'n3', value: 70, left: 'n6', right: 'n7' },
+  { id: 'n4', value: 20, left: 'n8', right: 'n9' },
+  { id: 'n5', value: 40, left: null, right: null },
+  { id: 'n6', value: 60, left: null, right: null },
+  { id: 'n7', value: 80, left: 'n10', right: null },
+  { id: 'n8', value: 15, left: null, right: null },
+  { id: 'n9', value: 25, left: null, right: null },
+  { id: 'n10', value: 75, left: null, right: null },
 ];
 const ROOT_ID = 'n1';
 
 const CODE_SNIPPETS = {
   inorder: `function inorder(node) {
-  if (node === null) return;
+  if (!node) return;
 
-  inorder(node.left);   // 1. Traverse left subtree
-
-  visit(node);          // 2. Visit root
-
-  inorder(node.right);  // 3. Traverse right subtree
-}
-
-// Result for this tree:
-// 15 → 20 → 25 → 30 → 40 → 50
-//   → 60 → 70 → 75 → 80
-// Produces sorted output for a BST!`,
+  inorder(node.left);   // 1. Left
+  console.log(node);    // 2. Root
+  inorder(node.right);  // 3. Right
+}`,
 
   preorder: `function preorder(node) {
-  if (node === null) return;
+  if (!node) return;
 
-  visit(node);           // 1. Visit root first
-
-  preorder(node.left);   // 2. Traverse left subtree
-
-  preorder(node.right);  // 3. Traverse right subtree
-}
-
-// Result for this tree:
-// 50 → 30 → 20 → 15 → 25
-//   → 40 → 70 → 60 → 80 → 75
-// Useful for copying or serializing a tree.`,
+  console.log(node);    // 1. Root
+  preorder(node.left);  // 2. Left
+  preorder(node.right); // 3. Right
+}`,
 
   postorder: `function postorder(node) {
-  if (node === null) return;
+  if (!node) return;
 
-  postorder(node.left);   // 1. Traverse left subtree
-
-  postorder(node.right);  // 2. Traverse right subtree
-
-  visit(node);            // 3. Visit root last
-}
-
-// Result for this tree:
-// 15 → 25 → 20 → 40 → 30
-//   → 60 → 75 → 80 → 70 → 50
-// Useful for deleting a tree (children first).`,
+  postorder(node.left);   // 1. Left
+  postorder(node.right);  // 2. Right
+  console.log(node);      // 3. Root
+}`,
 };
 
 const TRAVERSALS = {
-  inorder:   { fn: inorderTraversal,   label: 'In-order',   desc: 'Left → Root → Right', badge: 'badge-blue'   },
-  preorder:  { fn: preorderTraversal,  label: 'Pre-order',  desc: 'Root → Left → Right', badge: 'badge-purple' },
+  inorder: { fn: inorderTraversal, label: 'In-order', desc: 'Left → Root → Right', badge: 'badge-blue' },
+  preorder: { fn: preorderTraversal, label: 'Pre-order', desc: 'Root → Left → Right', badge: 'badge-purple' },
   postorder: { fn: postorderTraversal, label: 'Post-order', desc: 'Left → Right → Root', badge: 'badge-yellow' },
 };
 
@@ -84,7 +63,7 @@ function calcPositions(id, depth, xMin, xMax, positions) {
   const y = 40 + depth * 80;
   positions[id] = { x, y };
   const node = NODE_MAP[id];
-  calcPositions(node.left,  depth + 1, xMin, (xMin + xMax) / 2, positions);
+  calcPositions(node.left, depth + 1, xMin, (xMin + xMax) / 2, positions);
   calcPositions(node.right, depth + 1, (xMin + xMax) / 2, xMax, positions);
 }
 
@@ -94,28 +73,29 @@ calcPositions(ROOT_ID, 0, 0, SVG_W, POSITIONS);
 function highlight(code) {
   const keywords = /\b(function|return|const|let|if|else|while|for|of|null)\b/g;
   const comments = /(\/\/[^\n]*)/g;
-  const numbers  = /\b(\d+)\b/g;
-  const strings  = /('[^']*'|"[^"]*")/g;
+  const numbers = /\b(\d+)\b/g;
+  const strings = /('[^']*'|"[^"]*")/g;
   return code
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    .replace(strings,  '<span class="tok-str">$1</span>')
+    .replace(strings, '<span class="tok-str">$1</span>')
     .replace(comments, '<span class="tok-comment">$1</span>')
     .replace(keywords, '<span class="tok-kw">$1</span>')
-    .replace(numbers,  '<span class="tok-num">$1</span>');
+    .replace(numbers, '<span class="tok-num">$1</span>');
 }
 
 export default function TreeVisualizer() {
   const [traversal, setTraversal] = useState('inorder');
-  const [frames, setFrames]       = useState([]);
-  const [frameIdx, setFrameIdx]   = useState(-1);
-  const [playing, setPlaying]     = useState(false);
-  const [done, setDone]           = useState(false);
-  const [showCode, setShowCode]   = useState(true);
+  const [speed, setSpeed] = useState(50);
+  const [frames, setFrames] = useState([]);
+  const [frameIdx, setFrameIdx] = useState(-1);
+  const [playing, setPlaying] = useState(false);
+  const [done, setDone] = useState(false);
+  const [showCode, setShowCode] = useState(false);
   const timerRef = useRef(null);
 
   const currentFrame = frames[frameIdx] ?? null;
-  const highlighted  = currentFrame?.highlighted ?? null;
-  const order        = currentFrame?.order ?? [];
+  const highlighted = currentFrame?.highlighted ?? null;
+  const order = currentFrame?.order ?? [];
 
   const reset = useCallback(() => {
     clearInterval(timerRef.current);
@@ -126,21 +106,33 @@ export default function TreeVisualizer() {
   }, []);
 
   const play = useCallback(() => {
-    const f = TRAVERSALS[traversal].fn(TREE_NODES, ROOT_ID);
-    setFrames(f);
-    let idx = -1;
+    if (frames.length === 0 || done) {
+      const f = TRAVERSALS[traversal].fn(TREE_NODES, ROOT_ID);
+      setFrames(f);
+      setFrameIdx(-1);
+      setDone(false);
+    }
     setPlaying(true);
-    setDone(false);
-    timerRef.current = setInterval(() => {
-      idx++;
-      setFrameIdx(idx);
-      if (idx >= f.length - 1) {
-        clearInterval(timerRef.current);
-        setPlaying(false);
-        setDone(true);
-      }
-    }, 600);
-  }, [traversal]);
+  }, [frames.length, done, traversal]);
+
+  useEffect(() => {
+    if (playing) {
+      clearInterval(timerRef.current);
+      timerRef.current = setInterval(() => {
+        setFrameIdx(prev => {
+          const next = prev + 1;
+          if (next >= frames.length - 1) {
+            clearInterval(timerRef.current);
+            setPlaying(false);
+            setDone(true);
+            return frames.length - 1 > 0 ? frames.length - 1 : next;
+          }
+          return next;
+        });
+      }, Math.max(10, 1000 - speed * 9.9));
+    }
+    return () => clearInterval(timerRef.current);
+  }, [playing, speed, frames.length]);
 
   const step = useCallback(() => {
     let f = frames;
@@ -185,29 +177,34 @@ export default function TreeVisualizer() {
               {v.label}
             </button>
           ))}
+          <div className="ctrl-group" style={{ marginLeft: '12px' }}>
+            <label>Speed <span className="mono">{speed}%</span></label>
+            <input type="range" min={1} max={100} value={speed}
+              onChange={e => setSpeed(+e.target.value)} />
+          </div>
           <span className="ctrl-sep" />
           <div className="playback-btns">
             {!playing
               ? <button className="btn btn-primary btn-icon" onClick={play} disabled={done} title="Play">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5,3 19,12 5,21"/></svg>
-                </button>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5,3 19,12 5,21" /></svg>
+              </button>
               : <button className="btn btn-ghost btn-icon" onClick={() => { clearInterval(timerRef.current); setPlaying(false); }} title="Pause">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
-                </button>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><rect x="6" y="4" width="4" height="16" /><rect x="14" y="4" width="4" height="16" /></svg>
+              </button>
             }
             <button className="btn btn-ghost btn-icon" onClick={stepBack} disabled={playing || frameIdx <= 0} title="Step back">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="15,18 9,12 15,6"/><line x1="9" y1="18" x2="9" y2="6"/>
+                <polyline points="15,18 9,12 15,6" /><line x1="9" y1="18" x2="9" y2="6" />
               </svg>
             </button>
             <button className="btn btn-ghost btn-icon" onClick={step} disabled={playing || done} title="Step forward">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="9,18 15,12 9,6"/><line x1="15" y1="18" x2="15" y2="6"/>
+                <polyline points="9,18 15,12 9,6" /><line x1="15" y1="18" x2="15" y2="6" />
               </svg>
             </button>
             <button className="btn btn-ghost btn-icon" onClick={reset} title="Reset">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/>
+                <polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 .49-3.51" />
               </svg>
             </button>
           </div>

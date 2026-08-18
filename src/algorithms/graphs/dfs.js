@@ -1,12 +1,17 @@
 export function dfsTraversal(graph, startId) {
-  const frames = [];
-  const visited = new Set();
-  const stack = [startId];
-  const path = [];
+  var frames = [];
+  var visited = new Set();
+  var stack = [];
+  var path = [];
+  var node, i, neighbor, neighbors;
+
+  stack.push(startId);
 
   while (stack.length > 0) {
-    const node = stack.pop();
+    node = stack.pop();
+
     if (visited.has(node)) continue;
+    
     visited.add(node);
     path.push(node);
     frames.push({
@@ -16,16 +21,25 @@ export function dfsTraversal(graph, startId) {
       path: [...path],
     });
 
-    const neighbors = [...(graph[node] || [])].reverse();
-    for (const neighbor of neighbors) {
-      if (!visited.has(neighbor)) {
-        stack.push(neighbor);
-        frames.push({
-          visited: new Set(visited),
-          current: node,
-          inStack: new Set(stack),
-          path: [...path],
-        });
+    neighbors = graph[node];
+    if (neighbors) {
+      // Reverse to preserve standard left-to-right visit order in our specific visualizer setup
+      var reversedNeighbors = [];
+      for (i = neighbors.length - 1; i >= 0; i--) {
+        reversedNeighbors.push(neighbors[i]);
+      }
+      
+      for (i = 0; i < reversedNeighbors.length; i++) {
+        neighbor = reversedNeighbors[i];
+        if (!visited.has(neighbor)) {
+          stack.push(neighbor);
+          frames.push({
+            visited: new Set(visited),
+            current: node,
+            inStack: new Set(stack),
+            path: [...path],
+          });
+        }
       }
     }
   }

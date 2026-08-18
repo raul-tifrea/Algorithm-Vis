@@ -1,71 +1,88 @@
 
 function getNodes(tree, rootId) {
-  const map = {};
-  for (const node of tree) map[node.id] = node;
+  var map = {};
+  for (var i = 0; i < tree.length; i++) {
+    map[tree[i].id] = tree[i];
+  }
   return map;
 }
 
 export function inorderTraversal(tree, rootId) {
-  const frames = [];
-  const map = getNodes(tree, rootId);
-  const order = [];
+  var frames = [];
+  var map = getNodes(tree, rootId);
+  var order = [];
 
-  function traverse(id) {
-    if (!id || !map[id]) return;
-    traverse(map[id].left);
-    order.push(id);
-    frames.push({ highlighted: id, order: [...order] });
-    traverse(map[id].right);
+  function inorder(nodeId) {
+    if (nodeId == null || !map[nodeId]) return;
+    
+    inorder(map[nodeId].left);
+    
+    order.push(nodeId);
+    frames.push({ highlighted: nodeId, order: [...order] });
+    
+    inorder(map[nodeId].right);
   }
-  traverse(rootId);
+  
+  inorder(rootId);
   return frames;
 }
 
 export function preorderTraversal(tree, rootId) {
-  const frames = [];
-  const map = getNodes(tree, rootId);
-  const order = [];
+  var frames = [];
+  var map = getNodes(tree, rootId);
+  var order = [];
 
-  function traverse(id) {
-    if (!id || !map[id]) return;
-    order.push(id);
-    frames.push({ highlighted: id, order: [...order] });
-    traverse(map[id].left);
-    traverse(map[id].right);
+  function preorder(nodeId) {
+    if (nodeId == null || !map[nodeId]) return;
+    
+    order.push(nodeId);
+    frames.push({ highlighted: nodeId, order: [...order] });
+    
+    preorder(map[nodeId].left);
+    preorder(map[nodeId].right);
   }
-  traverse(rootId);
+  
+  preorder(rootId);
   return frames;
 }
 
 export function postorderTraversal(tree, rootId) {
-  const frames = [];
-  const map = getNodes(tree, rootId);
-  const order = [];
+  var frames = [];
+  var map = getNodes(tree, rootId);
+  var order = [];
 
-  function traverse(id) {
-    if (!id || !map[id]) return;
-    traverse(map[id].left);
-    traverse(map[id].right);
-    order.push(id);
-    frames.push({ highlighted: id, order: [...order] });
+  function postorder(nodeId) {
+    if (nodeId == null || !map[nodeId]) return;
+    
+    postorder(map[nodeId].left);
+    postorder(map[nodeId].right);
+    
+    order.push(nodeId);
+    frames.push({ highlighted: nodeId, order: [...order] });
   }
-  traverse(rootId);
+  
+  postorder(rootId);
   return frames;
 }
 
 export function levelorderTraversal(tree, rootId) {
-  const frames = [];
-  const map = getNodes(tree, rootId);
-  const order = [];
-  const queue = [rootId];
+  var frames = [];
+  var map = getNodes(tree, rootId);
+  var order = [];
+  var queue = [];
+  var nodeId;
+
+  queue.push(rootId);
 
   while (queue.length > 0) {
-    const id = queue.shift();
-    if (!id || !map[id]) continue;
-    order.push(id);
-    frames.push({ highlighted: id, order: [...order] });
-    if (map[id].left)  queue.push(map[id].left);
-    if (map[id].right) queue.push(map[id].right);
+    nodeId = queue.shift();
+    if (nodeId == null || !map[nodeId]) continue;
+    
+    order.push(nodeId);
+    frames.push({ highlighted: nodeId, order: [...order] });
+    
+    if (map[nodeId].left != null) queue.push(map[nodeId].left);
+    if (map[nodeId].right != null) queue.push(map[nodeId].right);
   }
   return frames;
 }

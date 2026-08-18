@@ -1,18 +1,23 @@
 export function selectionSort(arr) {
   const frames = [];
   const a = [...arr];
-  const n = a.length;
-  const sorted = new Set();
+  var n = a.length;
+  var i, j, min_idx, temp;
+  var sorted = new Set();
 
-  for (let i = 0; i < n - 1; i++) {
-    let minIdx = i;
-    for (let j = i + 1; j < n; j++) {
-      frames.push({ array: [...a], comparing: [minIdx, j], swapped: [], sorted: [...sorted] });
-      if (a[j] < a[minIdx]) minIdx = j;
+  for (i = 0; i < n - 1; i++) {
+    min_idx = i;
+    for (j = i + 1; j < n; j++) {
+      frames.push({ array: [...a], comparing: [min_idx, j], swapped: [], sorted: [...sorted] });
+      if (a[j] < a[min_idx]) {
+        min_idx = j;
+      }
     }
-    if (minIdx !== i) {
-      [a[i], a[minIdx]] = [a[minIdx], a[i]];
-      frames.push({ array: [...a], comparing: [], swapped: [i, minIdx], sorted: [...sorted] });
+    if (min_idx !== i) {
+      temp = a[i];
+      a[i] = a[min_idx];
+      a[min_idx] = temp;
+      frames.push({ array: [...a], comparing: [], swapped: [i, min_idx], sorted: [...sorted] });
     }
     sorted.add(i);
   }

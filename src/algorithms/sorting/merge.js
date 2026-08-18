@@ -2,26 +2,56 @@ export function mergeSort(arr) {
   const frames = [];
   const a = [...arr];
 
-  function merge(a, l, m, r) {
-    const left  = a.slice(l, m + 1);
-    const right = a.slice(m + 1, r + 1);
-    let i = 0, j = 0, k = l;
-    while (i < left.length && j < right.length) {
-      frames.push({ array: [...a], comparing: [l + i, m + 1 + j], swapped: [], sorted: [] });
-      if (left[i] <= right[j]) { a[k++] = left[i++]; }
-      else                     { a[k++] = right[j++]; }
-      frames.push({ array: [...a], comparing: [], swapped: [k - 1], sorted: [] });
+  function merge(arr, l, m, r) {
+    var n1 = m - l + 1;
+    var n2 = r - m;
+
+    var L = new Array(n1);
+    var R = new Array(n2);
+
+    for (var i = 0; i < n1; i++) L[i] = arr[l + i];
+    for (var j = 0; j < n2; j++) R[j] = arr[m + 1 + j];
+
+    var i = 0;
+    var j = 0;
+    var k = l;
+
+    while (i < n1 && j < n2) {
+      frames.push({ array: [...arr], comparing: [l + i, m + 1 + j], swapped: [], sorted: [] });
+      if (L[i] <= R[j]) {
+        arr[k] = L[i];
+        i++;
+      } else {
+        arr[k] = R[j];
+        j++;
+      }
+      frames.push({ array: [...arr], comparing: [], swapped: [k], sorted: [] });
+      k++;
     }
-    while (i < left.length) { a[k++] = left[i++]; frames.push({ array: [...a], comparing: [], swapped: [k-1], sorted: [] }); }
-    while (j < right.length){ a[k++] = right[j++]; frames.push({ array: [...a], comparing: [], swapped: [k-1], sorted: [] }); }
+
+    while (i < n1) {
+      arr[k] = L[i];
+      frames.push({ array: [...arr], comparing: [], swapped: [k], sorted: [] });
+      i++;
+      k++;
+    }
+
+    while (j < n2) {
+      arr[k] = R[j];
+      frames.push({ array: [...arr], comparing: [], swapped: [k], sorted: [] });
+      j++;
+      k++;
+    }
   }
 
-  function sort(a, l, r) {
-    if (l >= r) return;
-    const m = Math.floor((l + r) / 2);
-    sort(a, l, m);
-    sort(a, m + 1, r);
-    merge(a, l, m, r);
+  function sort(arr, l, r) {
+    if (l >= r) {
+      return;
+    }
+    var m = l + parseInt((r - l) / 2);
+    sort(arr, l, m);
+    sort(arr, m + 1, r);
+    merge(arr, l, m, r);
   }
 
   sort(a, 0, a.length - 1);
