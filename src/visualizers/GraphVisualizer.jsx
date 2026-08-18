@@ -3,7 +3,6 @@ import { bfsTraversal } from '../algorithms/graphs/bfs';
 import { dfsTraversal } from '../algorithms/graphs/dfs';
 import './GraphVisualizer.css';
 
-// ─── Pre-built graph ─────────────────────────────────────────
 const NODES = [
   { id: 'A', x: 350, y:  60 },
   { id: 'B', x: 180, y: 160 },
@@ -34,57 +33,49 @@ for (const [u, v] of EDGES) {
 
 const NODE_MAP = Object.fromEntries(NODES.map(n => [n.id, n]));
 
-// ─── Code snippets ────────────────────────────────────────────
 const CODE_SNIPPETS = {
   bfs: `function bfs(graph, start) {
   const visited = new Set();
-  const queue   = [start];  // Use a queue (FIFO)
+  const queue   = [start];
   const result  = [];
 
   visited.add(start);
 
   while (queue.length > 0) {
-    const node = queue.shift();  // Dequeue front
+    const node = queue.shift();
     result.push(node);
 
     for (const neighbor of graph[node]) {
       if (!visited.has(neighbor)) {
         visited.add(neighbor);
-        queue.push(neighbor);    // Enqueue unvisited neighbors
+        queue.push(neighbor);
       }
     }
   }
   return result;
-}
-
-// Explores level by level — closest nodes first.
-// Time:  O(V + E)   Space: O(V)`,
+}`,
 
   dfs: `function dfs(graph, start) {
   const visited = new Set();
-  const stack   = [start];  // Use a stack (LIFO)
+  const stack   = [start];
   const result  = [];
 
   while (stack.length > 0) {
-    const node = stack.pop();   // Pop from top
+    const node = stack.pop();
 
     if (visited.has(node)) continue;
     visited.add(node);
     result.push(node);
 
-    // Push neighbors in reverse to preserve order
     const neighbors = [...graph[node]].reverse();
     for (const neighbor of neighbors) {
       if (!visited.has(neighbor)) {
-        stack.push(neighbor);   // Push unvisited neighbors
+        stack.push(neighbor);
       }
     }
   }
   return result;
-}
-
-// Goes as deep as possible before backtracking.
-// Time:  O(V + E)   Space: O(V)`,
+}`,
 };
 
 const ALGORITHMS = {
@@ -97,7 +88,6 @@ const SVG_W = 700;
 const SVG_H = 480;
 const R = 24;
 
-// ─── Syntax highlighter ───────────────────────────────────────
 function highlight(code) {
   const keywords = /\b(function|return|const|let|if|else|while|for|of|new|continue|true|false)\b/g;
   const comments = /(\/\/[^\n]*)/g;
@@ -186,7 +176,6 @@ export default function GraphVisualizer() {
 
   return (
     <div className="graph-vis fade-in-up">
-      {/* Controls */}
       <div className="graph-controls card">
         <div className="ctrl-row">
           {Object.entries(ALGORITHMS).map(([key, v]) => (
@@ -200,26 +189,42 @@ export default function GraphVisualizer() {
             </button>
           ))}
           <span className="ctrl-sep" />
-          {!playing
-            ? <button className="btn btn-primary btn-sm" onClick={play} disabled={done}>▶ Play</button>
-            : <button className="btn btn-ghost btn-sm" onClick={() => { clearInterval(timerRef.current); setPlaying(false); }}>⏸ Pause</button>
-          }
-          <button className="btn btn-ghost btn-sm" onClick={stepBack} disabled={playing || frameIdx <= 0}>← Back</button>
-          <button className="btn btn-ghost btn-sm" onClick={step} disabled={playing || done}>→ Step</button>
-          <button className="btn btn-ghost btn-sm" onClick={reset}>↺ Reset</button>
+          <div className="playback-btns">
+            {!playing
+              ? <button className="btn btn-primary btn-icon" onClick={play} disabled={done} title="Play">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5,3 19,12 5,21"/></svg>
+                </button>
+              : <button className="btn btn-ghost btn-icon" onClick={() => { clearInterval(timerRef.current); setPlaying(false); }} title="Pause">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+                </button>
+            }
+            <button className="btn btn-ghost btn-icon" onClick={stepBack} disabled={playing || frameIdx <= 0} title="Step back">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="15,18 9,12 15,6"/><line x1="9" y1="18" x2="9" y2="6"/>
+              </svg>
+            </button>
+            <button className="btn btn-ghost btn-icon" onClick={step} disabled={playing || done} title="Step forward">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="9,18 15,12 9,6"/><line x1="15" y1="18" x2="15" y2="6"/>
+              </svg>
+            </button>
+            <button className="btn btn-ghost btn-icon" onClick={reset} title="Reset">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/>
+              </svg>
+            </button>
+          </div>
           <button
             className={`btn btn-ghost btn-sm code-toggle ${showCode ? 'active' : ''}`}
             onClick={() => setShowCode(v => !v)}
           >
-            {'</>'} {showCode ? 'Hide Code' : 'Show Code'}
+            {showCode ? 'Hide Code' : 'Show Code'}
           </button>
         </div>
         <p className="graph-desc">{info.desc}</p>
       </div>
 
-      {/* Graph + side panels */}
       <div className="graph-main">
-        {/* SVG */}
         <div className="graph-canvas card">
           <svg viewBox={`0 0 ${SVG_W} ${SVG_H}`} width="100%" height="100%">
             {EDGES.map(([u, v]) => {
@@ -243,7 +248,6 @@ export default function GraphVisualizer() {
           </svg>
         </div>
 
-        {/* Side panels */}
         <div className="graph-side">
           <div className="card graph-panel">
             <h3>{structLabel}</h3>
@@ -287,7 +291,6 @@ export default function GraphVisualizer() {
         </div>
       </div>
 
-      {/* Code panel */}
       {showCode && (
         <div className="graph-code-panel card">
           <div className="code-panel-header">

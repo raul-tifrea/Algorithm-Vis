@@ -8,8 +8,7 @@
 .page-header p  { font-size: 0.88rem; }
 
 .page-icon {
-  font-size: 1.3rem;
-  width: 46px; height: 46px;
+  width: 44px; height: 44px;
   border-radius: var(--radius-md);
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;

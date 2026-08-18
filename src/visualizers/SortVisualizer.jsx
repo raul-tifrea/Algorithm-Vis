@@ -7,7 +7,6 @@ import { quickSort }     from '../algorithms/sorting/quick';
 import { heapSort }      from '../algorithms/sorting/heap';
 import './SortVisualizer.css';
 
-// ─── Algorithm code snippets ──────────────────────────────────
 const CODE_SNIPPETS = {
   bubble: `function bubbleSort(arr) {
   const n = arr.length;
@@ -162,7 +161,6 @@ function getBarColor(i, frame) {
   return 'default';
 }
 
-// ─── Syntax highlighter (no deps) ────────────────────────────
 function highlight(code) {
   const keywords = /\b(function|return|const|let|if|else|while|for|of|new|import|export|default)\b/g;
   const comments = /(\/\/[^\n]*)/g;
@@ -259,7 +257,7 @@ export default function SortVisualizer() {
 
   const stepInfo = () => {
     if (!currentFrame) return 'Press Play or Step to start';
-    if (currentFrame.sorted && currentFrame.sorted.length === displayArray.length) return '✓ Array sorted!';
+    if (currentFrame.sorted && currentFrame.sorted.length === displayArray.length) return 'Array sorted!';
     if (currentFrame.comparing?.length) return `Comparing indices ${currentFrame.comparing.join(' and ')}`;
     if (currentFrame.swapped?.length)   return `Swapping indices ${currentFrame.swapped.join(' and ')}`;
     if (currentFrame.pivot !== undefined && currentFrame.pivot >= 0) return `Pivot placed at index ${currentFrame.pivot}`;
@@ -268,7 +266,6 @@ export default function SortVisualizer() {
 
   return (
     <div className="sort-vis fade-in-up">
-      {/* Controls */}
       <div className="sort-controls card">
         <div className="ctrl-row">
           <div className="ctrl-group">
@@ -291,27 +288,46 @@ export default function SortVisualizer() {
           </div>
         </div>
         <div className="ctrl-row">
-          <button className="btn btn-ghost btn-sm" onClick={reset} disabled={playing}>↺ Randomize</button>
-          {!playing
-            ? <button className="btn btn-primary btn-sm" onClick={play} disabled={done && frames.length > 0}>▶ Play</button>
-            : <button className="btn btn-ghost btn-sm" onClick={pause}>⏸ Pause</button>
-          }
-          <button className="btn btn-ghost btn-sm" onClick={stepBack} disabled={playing || frameIdx <= 0}>← Back</button>
-          <button className="btn btn-ghost btn-sm" onClick={step} disabled={playing || done}>→ Step</button>
+          <button className="btn btn-ghost btn-sm" onClick={reset} disabled={playing}
+            title="Randomize array">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="1 4 1 10 7 10"/>
+              <path d="M3.51 15a9 9 0 1 0 .49-3.51"/>
+            </svg>
+            Randomize
+          </button>
+          <div className="playback-btns">
+            {!playing
+              ? <button className="btn btn-primary btn-icon" onClick={play} disabled={done && frames.length > 0} title="Play">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5,3 19,12 5,21"/></svg>
+                </button>
+              : <button className="btn btn-ghost btn-icon" onClick={pause} title="Pause">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+                </button>
+            }
+            <button className="btn btn-ghost btn-icon" onClick={stepBack} disabled={playing || frameIdx <= 0} title="Step back">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="15,18 9,12 15,6"/><line x1="9" y1="18" x2="9" y2="6"/>
+              </svg>
+            </button>
+            <button className="btn btn-ghost btn-icon" onClick={step} disabled={playing || done} title="Step forward">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="9,18 15,12 9,6"/><line x1="15" y1="18" x2="15" y2="6"/>
+              </svg>
+            </button>
+          </div>
           <span className="ctrl-sep" />
           <button
             className={`btn btn-ghost btn-sm code-toggle ${showCode ? 'active' : ''}`}
             onClick={() => setShowCode(v => !v)}
           >
-            {'</>'}  {showCode ? 'Hide Code' : 'Show Code'}
+            {showCode ? 'Hide Code' : 'Show Code'}
           </button>
           <span className="mono step-info">{frameIdx >= 0 ? `Frame ${frameIdx + 1} / ${frames.length}` : 'Ready'}</span>
         </div>
       </div>
 
-      {/* Main layout: canvas + (optional) code side by side */}
       <div className={`sort-body ${showCode ? 'with-code' : ''}`}>
-        {/* Canvas */}
         <div className="sort-canvas card">
           <div className="bars-container">
             {displayArray.map((val, i) => (
@@ -327,7 +343,6 @@ export default function SortVisualizer() {
           </div>
         </div>
 
-        {/* Code Panel */}
         {showCode && (
           <div className="code-panel card">
             <div className="code-panel-header">
@@ -342,16 +357,24 @@ export default function SortVisualizer() {
         )}
       </div>
 
-      {/* Info row */}
       <div className="sort-info">
         <div className="card info-step">{stepInfo()}</div>
         <div className="card info-complexity">
           <h3>Complexity</h3>
           <table>
             <tbody>
-              <tr><td>Time</td><td className="mono badge badge-blue">{algoInfo.time}</td></tr>
-              <tr><td>Space</td><td className="mono badge badge-purple">{algoInfo.space}</td></tr>
-              <tr><td>Stable</td><td><span className={`badge ${algoInfo.stable ? 'badge-green' : 'badge-yellow'}`}>{algoInfo.stable ? 'Yes' : 'No'}</span></td></tr>
+              <tr>
+                <td>Time</td>
+                <td><span className="mono badge badge-blue">{algoInfo.time}</span></td>
+              </tr>
+              <tr>
+                <td>Space</td>
+                <td><span className="mono badge badge-purple">{algoInfo.space}</span></td>
+              </tr>
+              <tr>
+                <td>Stable</td>
+                <td><span className={`badge ${algoInfo.stable ? 'badge-green' : 'badge-yellow'}`}>{algoInfo.stable ? 'Yes' : 'No'}</span></td>
+              </tr>
             </tbody>
           </table>
         </div>

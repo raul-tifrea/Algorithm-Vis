@@ -1,4 +1,3 @@
-// Returns array of animation frames: [{array, comparing, swapped, sorted}]
 export function bubbleSort(arr) {
   const frames = [];
   const a = [...arr];

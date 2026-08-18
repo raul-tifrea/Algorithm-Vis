@@ -1,5 +1,3 @@
-// Tree node: { id, value, left: id|null, right: id|null }
-// Returns frames: { highlighted: id[], order: id[] }
 
 function getNodes(tree, rootId) {
   const map = {};

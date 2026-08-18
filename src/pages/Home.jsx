@@ -1,10 +1,33 @@
 import { Link } from 'react-router-dom';
 import './Home.css';
 
+const CategoryIcons = {
+  sorting: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/>
+      <line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/>
+      <line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>
+    </svg>
+  ),
+  trees: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="4" r="2"/><circle cx="6" cy="14" r="2"/><circle cx="18" cy="14" r="2"/>
+      <line x1="12" y1="6" x2="6" y2="12"/><line x1="12" y1="6" x2="18" y2="12"/>
+    </svg>
+  ),
+  graphs: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="5" cy="12" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="19" cy="19" r="2"/>
+      <line x1="7" y1="12" x2="17" y2="6"/><line x1="7" y1="12" x2="17" y2="18"/>
+    </svg>
+  ),
+};
+
+
 const CATEGORIES = [
   {
     to: '/sorting',
-    icon: '▥',
+    icon: CategoryIcons.sorting,
     title: 'Sorting',
     color: 'blue',
     algorithms: ['Bubble', 'Merge', 'Quick', 'Insertion', 'Selection', 'Heap'],
@@ -12,15 +35,15 @@ const CATEGORIES = [
   },
   {
     to: '/trees',
-    icon: '⬡',
+    icon: CategoryIcons.trees,
     title: 'Tree Traversals',
     color: 'purple',
     algorithms: ['In-order', 'Pre-order', 'Post-order'],
-    desc: 'Step through a binary tree using different traversal strategies.',
+    desc: 'Step through a binary tree with 4 traversal strategies.',
   },
   {
     to: '/graphs',
-    icon: '◎',
+    icon: CategoryIcons.graphs,
     title: 'Graph Algorithms',
     color: 'green',
     algorithms: ['BFS', 'DFS'],
@@ -28,26 +51,31 @@ const CATEGORIES = [
   },
 ];
 
+
 export default function Home() {
   return (
     <div className="home fade-in-up">
+
       {/* Hero */}
       <section className="hero">
+        <div className="hero-eyebrow">Interactive Learning</div>
         <h1>Algorithm <span className="gradient-text">Visualizer</span></h1>
         <p className="hero-sub">
           An interactive playground for sorting algorithms, tree traversals,
           and graph searches — step by step, frame by frame.
         </p>
         <div className="hero-actions">
-          <Link to="/sorting" className="btn btn-primary">Start with Sorting →</Link>
+          <Link to="/sorting" className="btn btn-primary">Start with Sorting</Link>
           <Link to="/graphs"  className="btn btn-ghost">Graph Algorithms</Link>
         </div>
       </section>
 
-      {/* Category Cards */}
-      <section className="categories">
+      {/* Bento grid: categories + feature chips together */}
+      <section className="bento">
+
+        {/* Category cards */}
         {CATEGORIES.map(cat => (
-          <Link key={cat.to} to={cat.to} className={`category-card card color-${cat.color}`}>
+          <Link key={cat.to} to={cat.to} className={`bento-card cat-card card color-${cat.color}`}>
             <div className="cat-header">
               <span className="cat-icon">{cat.icon}</span>
               <span className="cat-title">{cat.title}</span>
@@ -58,26 +86,10 @@ export default function Home() {
                 <span key={a} className="cat-algo-tag">{a}</span>
               ))}
             </div>
-            <span className="cat-cta">Open →</span>
+            <span className="cat-cta">Open &rarr;</span>
           </Link>
         ))}
-      </section>
 
-      {/* Quick features */}
-      <section className="features">
-        <div className="features-grid">
-          {[
-            { icon: '⏯', label: 'Play / Pause / Step' },
-            { icon: '⟵', label: 'Go Back one frame' },
-            { icon: '⚡', label: 'Adjustable speed' },
-            { icon: '</>', label: 'View algorithm code' },
-          ].map(f => (
-            <div key={f.label} className="feature-chip card">
-              <span className="chip-icon">{f.icon}</span>
-              <span className="chip-label">{f.label}</span>
-            </div>
-          ))}
-        </div>
       </section>
     </div>
   );

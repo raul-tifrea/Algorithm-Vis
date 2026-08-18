@@ -1,4 +1,3 @@
-// Each frame: { visited: Set<id>, current: id, path: id[] }
 
 export function bfsTraversal(graph, startId) {
   const frames = [];

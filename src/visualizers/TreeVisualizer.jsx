@@ -6,7 +6,6 @@ import {
 } from '../algorithms/trees/traversals';
 import './TreeVisualizer.css';
 
-// ─── Pre-built tree ───────────────────────────────────────────
 const TREE_NODES = [
   { id: 'n1',  value: 50,  left: 'n2',  right: 'n3'  },
   { id: 'n2',  value: 30,  left: 'n4',  right: 'n5'  },
@@ -21,7 +20,6 @@ const TREE_NODES = [
 ];
 const ROOT_ID = 'n1';
 
-// ─── Code snippets ────────────────────────────────────────────
 const CODE_SNIPPETS = {
   inorder: `function inorder(node) {
   if (node === null) return;
@@ -75,7 +73,6 @@ const TRAVERSALS = {
   postorder: { fn: postorderTraversal, label: 'Post-order', desc: 'Left → Right → Root', badge: 'badge-yellow' },
 };
 
-// ─── Layout ───────────────────────────────────────────────────
 const NODE_MAP = Object.fromEntries(TREE_NODES.map(n => [n.id, n]));
 const SVG_W = 700;
 const SVG_H = 360;
@@ -94,7 +91,6 @@ function calcPositions(id, depth, xMin, xMax, positions) {
 const POSITIONS = {};
 calcPositions(ROOT_ID, 0, 0, SVG_W, POSITIONS);
 
-// ─── Syntax highlighter ───────────────────────────────────────
 function highlight(code) {
   const keywords = /\b(function|return|const|let|if|else|while|for|of|null)\b/g;
   const comments = /(\/\/[^\n]*)/g;
@@ -177,7 +173,6 @@ export default function TreeVisualizer() {
 
   return (
     <div className="tree-vis fade-in-up">
-      {/* Controls */}
       <div className="tree-controls card">
         <div className="ctrl-row">
           {Object.entries(TRAVERSALS).map(([key, v]) => (
@@ -191,18 +186,36 @@ export default function TreeVisualizer() {
             </button>
           ))}
           <span className="ctrl-sep" />
-          {!playing
-            ? <button className="btn btn-primary btn-sm" onClick={play} disabled={done}>▶ Play</button>
-            : <button className="btn btn-ghost btn-sm" onClick={() => { clearInterval(timerRef.current); setPlaying(false); }}>⏸ Pause</button>
-          }
-          <button className="btn btn-ghost btn-sm" onClick={stepBack} disabled={playing || frameIdx <= 0}>← Back</button>
-          <button className="btn btn-ghost btn-sm" onClick={step} disabled={playing || done}>→ Step</button>
-          <button className="btn btn-ghost btn-sm" onClick={reset}>↺ Reset</button>
+          <div className="playback-btns">
+            {!playing
+              ? <button className="btn btn-primary btn-icon" onClick={play} disabled={done} title="Play">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5,3 19,12 5,21"/></svg>
+                </button>
+              : <button className="btn btn-ghost btn-icon" onClick={() => { clearInterval(timerRef.current); setPlaying(false); }} title="Pause">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+                </button>
+            }
+            <button className="btn btn-ghost btn-icon" onClick={stepBack} disabled={playing || frameIdx <= 0} title="Step back">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="15,18 9,12 15,6"/><line x1="9" y1="18" x2="9" y2="6"/>
+              </svg>
+            </button>
+            <button className="btn btn-ghost btn-icon" onClick={step} disabled={playing || done} title="Step forward">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="9,18 15,12 9,6"/><line x1="15" y1="18" x2="15" y2="6"/>
+              </svg>
+            </button>
+            <button className="btn btn-ghost btn-icon" onClick={reset} title="Reset">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/>
+              </svg>
+            </button>
+          </div>
           <button
             className={`btn btn-ghost btn-sm code-toggle ${showCode ? 'active' : ''}`}
             onClick={() => setShowCode(v => !v)}
           >
-            {'</>'} {showCode ? 'Hide Code' : 'Show Code'}
+            {showCode ? 'Hide Code' : 'Show Code'}
           </button>
         </div>
         <div className="traversal-desc">
@@ -211,9 +224,7 @@ export default function TreeVisualizer() {
         </div>
       </div>
 
-      {/* Main: tree + log */}
       <div className="tree-main">
-        {/* SVG Tree */}
         <div className="tree-canvas card">
           <svg viewBox={`0 0 ${SVG_W} ${SVG_H}`} width="100%" height="100%">
             {TREE_NODES.map(node => {
@@ -250,7 +261,6 @@ export default function TreeVisualizer() {
           </svg>
         </div>
 
-        {/* Order log */}
         <div className="tree-log card">
           <h3>Traversal Order</h3>
           <div className="order-list">
@@ -267,7 +277,6 @@ export default function TreeVisualizer() {
         </div>
       </div>
 
-      {/* Code panel */}
       {showCode && (
         <div className="tree-code-panel card">
           <div className="code-panel-header">

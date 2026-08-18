@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
-/* ─── Design Tokens ─────────────────────────────────────────── */
 :root {
   --bg-primary:    #0d0d14;
   --bg-secondary:  #12121c;
@@ -9,7 +8,7 @@
   --border:        #2a2a42;
   --border-focus:  rgba(99, 102, 241, 0.5);
 
-  --accent:        #6366f1;   /* indigo — primary accent */
+  --accent:        #6366f1;
   --accent-light:  #818cf8;
   --accent-dim:    rgba(99, 102, 241, 0.12);
 
@@ -33,9 +32,9 @@
   --font-mono: 'JetBrains Mono', monospace;
 }
 
-/* ─── Reset ──────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
+a { text-decoration: none; color: inherit; }
 
 body {
   font-family: var(--font-body);
@@ -48,7 +47,6 @@ body {
 
 #root { position: relative; }
 
-/* ─── Typography ─────────────────────────────────────────────── */
 h1, h2, h3, h4 { font-weight: 700; line-height: 1.25; }
 h1 { font-size: clamp(1.8rem, 4vw, 3rem); }
 h2 { font-size: clamp(1.4rem, 3vw, 2.2rem); }
@@ -64,7 +62,6 @@ code, .mono { font-family: var(--font-mono); }
   background-clip: text;
 }
 
-/* ─── Layout ─────────────────────────────────────────────────── */
 .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
 
 .page {
@@ -74,7 +71,6 @@ code, .mono { font-family: var(--font-mono); }
   margin: 0 auto;
 }
 
-/* ─── Card ───────────────────────────────────────────────────── */
 .card {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -84,7 +80,6 @@ code, .mono { font-family: var(--font-mono); }
 }
 .card:hover { border-color: #3a3a56; }
 
-/* ─── Buttons ────────────────────────────────────────────────── */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -123,7 +118,23 @@ code, .mono { font-family: var(--font-mono); }
 
 .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
 
-/* ─── Badge ──────────────────────────────────────────────────── */
+.btn-icon {
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.playback-btns {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
 .badge {
   display: inline-block;
   padding: 2px 9px;
@@ -137,7 +148,6 @@ code, .mono { font-family: var(--font-mono); }
 .badge-green  { background: rgba(52,211,153,0.12);  color: var(--neon-green);  border: 1px solid rgba(52,211,153,0.2); }
 .badge-yellow { background: rgba(251,191,36,0.12);  color: var(--neon-yellow); border: 1px solid rgba(251,191,36,0.2); }
 
-/* ─── Select / Range ─────────────────────────────────────────── */
 select {
   background: var(--bg-secondary);
   border: 1px solid var(--border);
@@ -174,20 +184,17 @@ input[type=range]::-webkit-slider-thumb {
 }
 input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
 
-/* ─── Scrollbar ──────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: var(--bg-secondary); }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
-/* ─── Animations ─────────────────────────────────────────────── */
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(16px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 .fade-in-up { animation: fadeInUp 0.4s ease both; }
 
-/* ─── Utility ────────────────────────────────────────────────── */
 .flex           { display: flex; }
 .items-center   { align-items: center; }
 .justify-between{ justify-content: space-between; }
