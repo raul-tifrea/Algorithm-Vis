@@ -3,6 +3,7 @@ export function dfsTraversal(graph, startId) {
   var visited = new Set();
   var stack = [];
   var path = [];
+  var previous = {};
   var node, i, neighbor, neighbors;
 
   stack.push(startId);
@@ -19,6 +20,7 @@ export function dfsTraversal(graph, startId) {
       current: node,
       inStack: new Set(stack),
       path: [...path],
+      previous: { ...previous },
     });
 
     neighbors = graph[node];
@@ -32,11 +34,13 @@ export function dfsTraversal(graph, startId) {
         neighbor = reversedNeighbors[i];
         if (!visited.has(neighbor)) {
           stack.push(neighbor);
+          previous[neighbor] = node;
           frames.push({
             visited: new Set(visited),
             current: node,
             inStack: new Set(stack),
             path: [...path],
+            previous: { ...previous },
           });
         }
       }

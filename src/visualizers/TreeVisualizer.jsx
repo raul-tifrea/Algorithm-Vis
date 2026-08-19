@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
   inorderTraversal,
   preorderTraversal,
@@ -417,7 +418,7 @@ export default function TreeVisualizer() {
               {toast}
             </div>
           )}
-          {quizDone && (
+          {quizDone && createPortal(
             <div className="quiz-banner">
               <div className="quiz-banner-icon">✓</div>
               <h3>{quizMistakes === 0 ? 'Perfect!' : 'Completed!'}</h3>
@@ -431,7 +432,8 @@ export default function TreeVisualizer() {
                 <button className="btn btn-primary" onClick={() => startQuiz()}>Try Again</button>
                 <button className="btn btn-ghost" onClick={newRandomTree}>New Tree</button>
               </div>
-            </div>
+            </div>,
+            document.body
           )}
           <svg viewBox={`0 0 ${SVG_W} ${SVG_H}`} width="100%" height="100%"
             style={{ cursor: quizMode && !quizDone ? 'pointer' : 'default' }}>

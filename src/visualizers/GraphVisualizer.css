@@ -137,34 +137,38 @@
 .graph-canvas.quiz-active { border-color: rgba(99,102,241,0.35); }
 
 .quiz-banner {
-  position: absolute;
-  inset: 0;
-  background: rgba(13,13,20,0.88);
-  backdrop-filter: blur(8px);
-  z-index: 10;
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  background: rgba(13,13,20,0.95);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.7);
+  z-index: 1000;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 14px;
+  gap: 10px;
+  padding: 16px 24px;
   border-radius: var(--radius-lg);
   animation: fadeInUp 0.35s ease both;
 }
 .quiz-banner-icon {
-  width: 56px;
-  height: 56px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background: rgba(52,211,153,0.15);
   border: 2px solid var(--neon-green);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.6rem;
+  font-size: 1.3rem;
   color: var(--neon-green);
   filter: drop-shadow(0 0 12px rgba(52,211,153,0.5));
 }
-.quiz-banner h3 { font-size: 1.5rem; color: var(--neon-green); }
-.quiz-banner p  { color: var(--text-muted); font-size: 0.92rem; }
+.quiz-banner h3 { font-size: 1.25rem; color: var(--neon-green); margin: 0; }
+.quiz-banner p  { color: var(--text-muted); font-size: 0.85rem; margin: 0; }
 .quiz-banner strong { color: var(--text-primary); }
 
 .quiz-banner-order {

@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { bfsTraversal } from '../algorithms/graphs/bfs';
 import { dfsTraversal } from '../algorithms/graphs/dfs';
 import { dijkstraTraversal } from '../algorithms/graphs/dijkstra';
@@ -8,7 +9,7 @@ const DEFAULT_NODES = [
   { id: 'A', x: 350, y: 60 },
   { id: 'B', x: 180, y: 160 },
   { id: 'C', x: 520, y: 160 },
-  { id: 'D', x: 80,  y: 290 },
+  { id: 'D', x: 80, y: 290 },
   { id: 'E', x: 280, y: 290 },
   { id: 'F', x: 430, y: 290 },
   { id: 'G', x: 620, y: 290 },
@@ -17,12 +18,12 @@ const DEFAULT_NODES = [
 ];
 
 const DEFAULT_EDGES = [
-  ['A','B',4], ['A','C',2],
-  ['B','D',5], ['B','E',1],
-  ['C','F',8], ['C','G',10],
-  ['D','H',2], ['E','H',6],
-  ['F','I',3], ['G','I',7],
-  ['E','F',4],
+  ['A', 'B', 4], ['A', 'C', 2],
+  ['B', 'D', 5], ['B', 'E', 1],
+  ['C', 'F', 8], ['C', 'G', 10],
+  ['D', 'H', 2], ['E', 'H', 6],
+  ['F', 'I', 3], ['G', 'I', 7],
+  ['E', 'F', 4],
 ];
 
 function buildGraph(nodes, edges) {
@@ -41,27 +42,36 @@ function buildGraph(nodes, edges) {
 const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 function generateRandomGraph() {
-  const count = 7 + Math.floor(Math.random() * 5);
+  const count = 6 + Math.floor(Math.random() * 4); // 6 to 9 nodes
   const ids = LETTERS.slice(0, count).split('');
   const SVG_W = 700, SVG_H = 480;
-  const pad = 70;
-  const MIN_DIST = 100;
+  const cx = SVG_W / 2;
+  const cy = SVG_H / 2;
+  const rx = (SVG_W / 2) - 90;
+  const ry = (SVG_H / 2) - 90;
+  
   const nodes = [];
+  
+  // Center node with slight jitter
+  nodes.push({
+    id: ids[0],
+    x: Math.round(cx + (Math.random() - 0.5) * 40),
+    y: Math.round(cy + (Math.random() - 0.5) * 40),
+  });
 
-  let attempts = 0;
-  while (nodes.length < ids.length && attempts < 5000) {
-    attempts++;
-    const x = pad + Math.random() * (SVG_W - pad * 2);
-    const y = pad + Math.random() * (SVG_H - pad * 2);
-    const tooClose = nodes.some(n => Math.hypot(n.x - x, n.y - y) < MIN_DIST);
-    if (!tooClose) {
-      nodes.push({ id: ids[nodes.length], x: Math.round(x), y: Math.round(y) });
-    }
-  }
-
-  if (nodes.length < ids.length) {
-    const fallbackIds = LETTERS.slice(0, nodes.length).split('');
-    nodes.forEach((n, i) => { n.id = fallbackIds[i]; });
+  const remaining = count - 1;
+  const startAngle = Math.random() * Math.PI * 2;
+  
+  for (let i = 0; i < remaining; i++) {
+    const angle = startAngle + (i / remaining) * Math.PI * 2;
+    const jitterX = (Math.random() - 0.5) * 30;
+    const jitterY = (Math.random() - 0.5) * 30;
+    
+    nodes.push({
+      id: ids[i + 1],
+      x: Math.round(cx + Math.cos(angle) * rx + jitterX),
+      y: Math.round(cy + Math.sin(angle) * ry + jitterY),
+    });
   }
 
   const nodeIds = nodes.map(n => n.id);
@@ -156,9 +166,9 @@ const CODE_SNIPPETS = {
 };
 
 const ALGORITHMS = {
-  bfs:      { fn: bfsTraversal,      label: 'BFS',      fullLabel: 'Breadth-First Search',    desc: 'Explores level by level using a queue',         badge: 'badge-blue'   },
-  dfs:      { fn: dfsTraversal,      label: 'DFS',      fullLabel: 'Depth-First Search',        desc: 'Explores as deep as possible using a stack',     badge: 'badge-purple' },
-  dijkstra: { fn: dijkstraTraversal, label: 'Dijkstra', fullLabel: "Dijkstra's Shortest Path", desc: 'Finds shortest paths from a source using weights', badge: 'badge-yellow'  },
+  bfs: { fn: bfsTraversal, label: 'BFS', fullLabel: 'Breadth-First Search', desc: 'Explores level by level using a queue', badge: 'badge-blue' },
+  dfs: { fn: dfsTraversal, label: 'DFS', fullLabel: 'Depth-First Search', desc: 'Explores as deep as possible using a stack', badge: 'badge-purple' },
+  dijkstra: { fn: dijkstraTraversal, label: 'Dijkstra', fullLabel: "Dijkstra's Shortest Path", desc: 'Finds shortest paths from a source using weights', badge: 'badge-yellow' },
 };
 
 const START_NODE = 'A';
@@ -383,7 +393,7 @@ export default function GraphVisualizer() {
   };
 
   const isEdgeActive = (u, v) => {
-    if (algo === 'dijkstra' && previous) {
+    if (previous) {
       return previous[u] === v || previous[v] === u;
     }
     return visited.has(u) && visited.has(v);
@@ -414,14 +424,14 @@ export default function GraphVisualizer() {
           ))}
           {!quizMode
             ? <button className="btn btn-sm btn-ghost quiz-btn" onClick={startQuiz} disabled={playing} style={{ marginLeft: '8px' }}>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
-                </svg>
-                Quiz
-              </button>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+              </svg>
+              Quiz
+            </button>
             : <button className="btn btn-sm btn-ghost" onClick={exitQuiz} style={{ marginLeft: '8px', color: 'var(--neon-yellow)', borderColor: 'rgba(251,191,36,0.3)' }}>
-                Exit Quiz
-              </button>
+              Exit Quiz
+            </button>
           }
           {!quizMode && (
             <>
@@ -501,7 +511,7 @@ export default function GraphVisualizer() {
               {toast}
             </div>
           )}
-          {quizDone && (
+          {quizDone && createPortal(
             <div className="quiz-banner">
               <div className="quiz-banner-icon">{quizMistakes === 0 ? '✓' : '✓'}</div>
               <h3>{quizMistakes === 0 ? 'Perfect!' : 'Completed!'}</h3>
@@ -515,16 +525,17 @@ export default function GraphVisualizer() {
                 <button className="btn btn-primary" onClick={startQuiz}>Try Again</button>
                 <button className="btn btn-ghost" onClick={newRandomGraph}>New Graph</button>
               </div>
-            </div>
+            </div>,
+            document.body
           )}
           <svg viewBox={`0 0 ${SVG_W} ${SVG_H}`} width="100%" height="100%" style={{ cursor: quizMode && !quizDone ? 'pointer' : 'default' }}>
             {graphEdges.map(([u, v, w]) => {
               const pu = NODE_MAP[u], pv = NODE_MAP[v];
               let active = false;
               if (quizMode) {
-                if (algo === 'dijkstra' && quizPrevious) {
-                  active = quizClicks.includes(u) && quizClicks.includes(v) && 
-                           (quizPrevious[u] === v || quizPrevious[v] === u);
+                if (quizPrevious) {
+                  active = quizClicks.includes(u) && quizClicks.includes(v) &&
+                    (quizPrevious[u] === v || quizPrevious[v] === u);
                 } else {
                   active = quizClicks.includes(u) && quizClicks.includes(v);
                 }
