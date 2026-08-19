@@ -21,7 +21,6 @@
   min-height: 460px;
 }
 
-/* Edges */
 .graph-edge {
   stroke: var(--border);
   stroke-width: 2;
@@ -32,7 +31,6 @@
   stroke-width: 3;
 }
 
-/* Nodes */
 .graph-node circle {
   fill: var(--bg-secondary);
   stroke: var(--border);
@@ -65,7 +63,6 @@
 }
 .graph-node.current text { fill: #fff; }
 
-/* Side */
 .graph-side { display: flex; flex-direction: column; gap: 16px; }
 
 .graph-panel h3, .graph-legend h3 {
@@ -113,16 +110,11 @@
   .graph-main { grid-template-columns: 1fr; }
 }
 
-/* ─── Code Panel ────────────────────────────────────────── */
 .graph-code-panel {
   padding: 0;
   overflow: hidden;
 }
 
-/* Shared .code-panel-header, .code-panel-title, .code-block
-   and token classes are defined in TreeVisualizer.css.
-   Both pages load both files via their page, so styles are available.
-   Redeclare here to be self-contained: */
 .graph-code-panel .code-panel-header {
   display: flex;
   align-items: center;

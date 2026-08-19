@@ -23,7 +23,6 @@ export function dfsTraversal(graph, startId) {
 
     neighbors = graph[node];
     if (neighbors) {
-      // Reverse to preserve standard left-to-right visit order in our specific visualizer setup
       var reversedNeighbors = [];
       for (i = neighbors.length - 1; i >= 0; i--) {
         reversedNeighbors.push(neighbors[i]);

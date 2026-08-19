@@ -1,7 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import './Navbar.css';
 
-// Simple inline SVG icons — no emoji, no icon library
 const Icons = {
   home: (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

@@ -24,7 +24,6 @@
   justify-content: center;
 }
 
-/* SVG */
 .tree-edge {
   stroke: var(--border);
   stroke-width: 2;
@@ -60,7 +59,6 @@
 }
 .tree-node.active text { fill: #fff; }
 
-/* Log */
 .tree-log h3 {
   font-size: 0.78rem;
   text-transform: uppercase;
@@ -107,7 +105,6 @@
   .tree-main { grid-template-columns: 1fr; }
 }
 
-/* ─── Code Panel ─────────────────────────────────────────── */
 .tree-code-panel {
   padding: 0;
   overflow: hidden;
@@ -141,7 +138,6 @@
   background: transparent;
 }
 
-/* Syntax tokens */
 .tok-kw      { color: #c678dd; font-weight: 600; }
 .tok-comment { color: #5c6370; font-style: italic; }
 .tok-num     { color: #d19a66; }

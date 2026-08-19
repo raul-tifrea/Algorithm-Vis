@@ -56,7 +56,6 @@ export default function Home() {
   return (
     <div className="home fade-in-up">
 
-      {/* Hero */}
       <section className="hero">
         <div className="hero-eyebrow">Interactive Learning</div>
         <h1>Algorithm <span className="gradient-text">Visualizer</span></h1>
@@ -70,10 +69,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Bento grid: categories + feature chips together */}
       <section className="bento">
 
-        {/* Category cards */}
         {CATEGORIES.map(cat => (
           <Link key={cat.to} to={cat.to} className={`bento-card cat-card card color-${cat.color}`}>
             <div className="cat-header">
