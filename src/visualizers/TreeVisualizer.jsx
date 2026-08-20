@@ -796,18 +796,20 @@ export default function TreeVisualizer() {
                 )}
               </div>
               <span className="ctrl-sep" />
-              <button
-                className={`btn btn-ghost btn-sm code-toggle ${showCode ? 'active' : ''}`}
-                onClick={() => setShowCode(v => !v)}
-              >
-                {showCode ? 'Hide Code' : 'Show Code'}
-              </button>
-              <button
-                className={`btn btn-ghost btn-sm code-toggle ${showDesc ? 'active' : ''}`}
-                onClick={() => setShowDesc(v => !v)}
-              >
-                {showDesc ? 'Hide Info' : 'Show Info'}
-              </button>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button
+                  className={`btn btn-ghost btn-sm code-toggle ${showCode ? 'active' : ''}`}
+                  onClick={() => setShowCode(v => !v)}
+                >
+                  {showCode ? 'Hide Code' : 'Show Code'}
+                </button>
+                <button
+                  className={`btn btn-ghost btn-sm code-toggle ${showDesc ? 'active' : ''}`}
+                  onClick={() => setShowDesc(v => !v)}
+                >
+                  {showDesc ? 'Hide Info' : 'Show Info'}
+                </button>
+              </div>
             </>
           )}
           {quizMode && (

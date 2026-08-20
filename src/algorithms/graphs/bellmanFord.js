@@ -41,14 +41,13 @@ export function bellmanFordTraversal(graph, startId) {
           
           visited.add(u);
           visited.add(v);
-          frontier[v] = newDist;
           
           frames.push({
             visited: new Set(visited),
             current: u,
             distances: Object.assign({}, distances),
             previous: Object.assign({}, previous),
-            frontier: Object.assign({}, frontier),
+            frontier: { [v]: newDist },
             path: Array.from(visited),
           });
         }
@@ -77,6 +76,15 @@ export function bellmanFordTraversal(graph, startId) {
       }
     }
   }
+
+  frames.push({
+    visited: new Set(visited),
+    current: null,
+    distances: Object.assign({}, distances),
+    previous: Object.assign({}, previous),
+    frontier: {},
+    path: Array.from(visited),
+  });
 
   return frames;
 }

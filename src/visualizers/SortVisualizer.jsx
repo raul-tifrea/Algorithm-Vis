@@ -402,9 +402,9 @@ function highlight(code) {
 export default function SortVisualizer() {
   const [algo, setAlgo] = useState('bubble');
   const [codeLang, setCodeLang] = useState('javascript');
-  const [size, setSize] = useState(20);
+  const [size, setSize] = useState(30);
   const [speed, setSpeed] = useState(50);
-  const [array, setArray] = useState(() => randomArray(20));
+  const [array, setArray] = useState(() => randomArray(30));
   const [frames, setFrames] = useState([]);
   const [frameIdx, setFrameIdx] = useState(-1);
   const [playing, setPlaying] = useState(false);
