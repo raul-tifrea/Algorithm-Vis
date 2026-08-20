@@ -5,7 +5,7 @@ import {
   preorderTraversal,
   postorderTraversal,
 } from '../algorithms/trees/traversals';
-import { bstSearch, bstInsert } from '../algorithms/trees/bst';
+import { bstSearch, bstInsert, bstDelete } from '../algorithms/trees/bst';
 import './TreeVisualizer.css';
 
 const DEFAULT_TREE_NODES = [
@@ -61,12 +61,12 @@ function generateRandomTree() {
 }
 
 function generateRandomBST() {
-  const targetCount = 6 + Math.floor(Math.random() * 6); // 6 to 11 nodes
+  const targetCount = 6 + Math.floor(Math.random() * 6);
   const MAX_DEPTH = 4;
   let idCounter = 1;
   const nodes = [];
   
-  const rootValue = 40 + Math.floor(Math.random() * 20); // 40-59
+  const rootValue = 40 + Math.floor(Math.random() * 20);
   const rootId = `n${idCounter++}`;
   nodes.push({ id: rootId, value: rootValue, left: null, right: null });
   
@@ -82,7 +82,7 @@ function generateRandomBST() {
     
     while (curr != null && currDepth < MAX_DEPTH) {
       const node = nodes.find(n => n.id === curr);
-      if (val === node.value) break; // duplicate
+      if (val === node.value) break;
       parent = node;
       if (val < node.value) {
         curr = node.left;
@@ -351,6 +351,74 @@ const CODE_SNIPPETS = {
     }
     return node;
 }`
+  },
+  bstDelete: {
+    javascript: `function bstDelete(node, target) {
+  if (!node) return null;
+  if (target < node.value) {
+    node.left = bstDelete(node.left, target);
+  } else if (target > node.value) {
+    node.right = bstDelete(node.right, target);
+  } else {
+    if (!node.left) return node.right;
+    if (!node.right) return node.left;
+    // Node with two children
+    let successor = node.right;
+    while (successor.left) successor = successor.left;
+    node.value = successor.value;
+    node.right = bstDelete(node.right, successor.value);
+  }
+  return node;
+}`,
+    python: `def bst_delete(node, target):
+    if not node: return None
+    if target < node.value:
+        node.left = bst_delete(node.left, target)
+    elif target > node.value:
+        node.right = bst_delete(node.right, target)
+    else:
+        if not node.left: return node.right
+        if not node.right: return node.left
+        # Node with two children
+        successor = node.right
+        while successor.left: successor = successor.left
+        node.value = successor.value
+        node.right = bst_delete(node.right, successor.value)
+    return node`,
+    java: `public static Node bstDelete(Node node, int target) {
+    if (node == null) return null;
+    if (target < node.value) {
+        node.left = bstDelete(node.left, target);
+    } else if (target > node.value) {
+        node.right = bstDelete(node.right, target);
+    } else {
+        if (node.left == null) return node.right;
+        if (node.right == null) return node.left;
+        // Node with two children
+        Node successor = node.right;
+        while (successor.left != null) successor = successor.left;
+        node.value = successor.value;
+        node.right = bstDelete(node.right, successor.value);
+    }
+    return node;
+}`,
+    cpp: `Node* bstDelete(Node* node, int target) {
+    if (!node) return nullptr;
+    if (target < node->value) {
+        node->left = bstDelete(node->left, target);
+    } else if (target > node->value) {
+        node->right = bstDelete(node->right, target);
+    } else {
+        if (!node->left) return node->right;
+        if (!node->right) return node->left;
+        // Node with two children
+        Node* successor = node->right;
+        while (successor->left) successor = successor->left;
+        node->value = successor->value;
+        node->right = bstDelete(node->right, successor->value);
+    }
+    return node;
+}`
   }
 };
 
@@ -360,6 +428,7 @@ const TRAVERSALS = {
   postorder: { fn: postorderTraversal, label: 'Post-order', desc: 'Left → Right → Root', badge: 'badge-yellow', explanation: 'Visits the left subtree, then the right subtree, and finally the root node. Often used to safely delete the tree from leaves to root.' },
   bstSearch: { fn: bstSearch,          label: 'BST Search', desc: 'Search for a target value in a Binary Search Tree', badge: 'badge-cyan', explanation: 'Starting from the root, compares the target value to the current node. If smaller, goes left; if larger, goes right. Achieves O(log n) time on balanced trees.' },
   bstInsert: { fn: bstInsert,          label: 'BST Insert', desc: 'Insert a new value into a Binary Search Tree', badge: 'badge-green', explanation: 'Traverses the tree exactly like a search to find the correct empty leaf spot, then places the new value there to maintain the BST sorted property.' },
+  bstDelete: { fn: bstDelete,          label: 'BST Delete', desc: 'Remove a value from a Binary Search Tree', badge: 'badge-red', explanation: 'Finds the node to remove. If it has two children, it is replaced by its in-order successor to maintain the tree properties.' },
 };
 
 const SVG_W = 700;
@@ -380,20 +449,9 @@ function buildNodeMap(nodes) {
   return Object.fromEntries(nodes.map(n => [n.id, n]));
 }
 
-function computeTraversalAnswer(traversalKey, nodes, rootId) {
-  const frames = TRAVERSALS[traversalKey].fn(nodes, rootId);
-  const order = [];
-  for (const f of frames) {
-    if (f.highlighted && !order.includes(f.highlighted)) order.push(f.highlighted);
-  }
-  return order;
-}
-
 function highlight(code) {
   let html = code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  // Support both // (JS, Java, C++) and # (Python) comments
-  const regex = /(\/\/[^\n]*|#[^\n]*)|('[^']*'|"[^"]*")|\b(function|return|const|let|if|else|while|for|of|new|import|export|default|continue|true|false|null|def|class|public|static|void|int|bool|size_t|std|vector|auto|decltype)\b|\b(\d+)\b/g;
-  
+  const regex = /(\/\/[^\n]*|#[^\n]*)|('[^']*'|"[^"]*")|\b(function|return|const|let|if|else|while|for|of|new|import|export|default|continue|true|false|null|def|class|public|static|void|int|bool|size_t|std|vector|auto|decltype|elif|while)\b|\b(\d+)\b/g;
   return html.replace(regex, (match, p1, p2, p3, p4) => {
     if (p1) return `<span class="tok-comment">${p1}</span>`;
     if (p2) return `<span class="tok-str">${p2}</span>`;
@@ -401,6 +459,15 @@ function highlight(code) {
     if (p4) return `<span class="tok-num">${p4}</span>`;
     return match;
   });
+}
+
+function computeTraversalAnswer(traversalKey, nodes, rootId) {
+  const frames = TRAVERSALS[traversalKey].fn(nodes, rootId);
+  const order = [];
+  for (const f of frames) {
+    if (f.highlighted && !order.includes(f.highlighted)) order.push(f.highlighted);
+  }
+  return order;
 }
 
 export default function TreeVisualizer() {
@@ -414,8 +481,10 @@ export default function TreeVisualizer() {
   const [showCode, setShowCode] = useState(false);
   const [showDesc, setShowDesc] = useState(false);
   const [insertValue, setInsertValue] = useState('50');
+  const [deleteValue, setDeleteValue] = useState('50');
   const [searchTarget, setSearchTarget] = useState(null);
   const timerRef = useRef(null);
+  const pendingUpdateRef = useRef(null);
 
   const [treeNodes, setTreeNodes] = useState(DEFAULT_TREE_NODES);
   const [rootId, setRootId] = useState(DEFAULT_ROOT_ID);
@@ -510,7 +579,7 @@ export default function TreeVisualizer() {
       setQuizMistakes(m => m + 1);
       setWrongNode(nodeId);
       setTimeout(() => setWrongNode(null), 600);
-      showToast(`Wrong! The correct next node was "${nodeMap[nextExpected]?.value}" — it has been placed automatically.`);
+      showToast(`Wrong! The correct next node was "${nodeMap[nextExpected]?.value}"`);
       const newClicks = [...quizClicks, nextExpected];
       setTimeout(() => {
         setQuizClicks(newClicks);
@@ -527,19 +596,21 @@ export default function TreeVisualizer() {
       let target = null;
       if (traversal === 'bstSearch') target = searchTarget ?? treeNodes[0].value;
       if (traversal === 'bstInsert') target = parseInt(insertValue, 10);
+      if (traversal === 'bstDelete') target = parseInt(deleteValue, 10);
       
       const res = TRAVERSALS[traversal].fn(treeNodes, rootId, target);
       if (res.frames) {
         setFrames(res.frames);
-        if (res.newTree) setTreeNodes(res.newTree);
+        pendingUpdateRef.current = { newTree: res.newTree, newRootId: res.newRootId };
       } else {
         setFrames(res);
+        pendingUpdateRef.current = null;
       }
       setFrameIdx(-1);
       setDone(false);
     }
     setPlaying(true);
-  }, [frames.length, done, traversal, treeNodes, rootId, searchTarget, insertValue]);
+  }, [frames.length, done, traversal, treeNodes, rootId, searchTarget, insertValue, deleteValue]);
 
   useEffect(() => {
     if (playing) {
@@ -551,6 +622,15 @@ export default function TreeVisualizer() {
             clearInterval(timerRef.current);
             setPlaying(false);
             setDone(true);
+            if (pendingUpdateRef.current) {
+              if (pendingUpdateRef.current.newTree) {
+                setTreeNodes(pendingUpdateRef.current.newTree);
+              }
+              if (pendingUpdateRef.current.newRootId !== undefined && pendingUpdateRef.current.newRootId !== null) {
+                setRootId(pendingUpdateRef.current.newRootId);
+              }
+              pendingUpdateRef.current = null;
+            }
             return frames.length - 1 > 0 ? frames.length - 1 : next;
           }
           return next;
@@ -566,23 +646,36 @@ export default function TreeVisualizer() {
       let target = null;
       if (traversal === 'bstSearch') target = searchTarget ?? treeNodes[0].value;
       if (traversal === 'bstInsert') target = parseInt(insertValue, 10);
+      if (traversal === 'bstDelete') target = parseInt(deleteValue, 10);
       
       const res = TRAVERSALS[traversal].fn(treeNodes, rootId, target);
       if (res.frames) {
         f = res.frames;
         setFrames(f);
-        if (res.newTree) setTreeNodes(res.newTree);
+        pendingUpdateRef.current = { newTree: res.newTree, newRootId: res.newRootId };
       } else {
         f = res;
         setFrames(f);
+        pendingUpdateRef.current = null;
       }
     }
     setFrameIdx(i => {
       const next = Math.min(i + 1, f.length - 1);
-      if (next === f.length - 1) setDone(true);
+      if (next === f.length - 1) {
+        setDone(true);
+        if (pendingUpdateRef.current) {
+          if (pendingUpdateRef.current.newTree) {
+            setTreeNodes(pendingUpdateRef.current.newTree);
+          }
+          if (pendingUpdateRef.current.newRootId !== undefined && pendingUpdateRef.current.newRootId !== null) {
+            setRootId(pendingUpdateRef.current.newRootId);
+          }
+          pendingUpdateRef.current = null;
+        }
+      }
       return next;
     });
-  }, [frames, traversal, treeNodes, rootId, searchTarget, insertValue]);
+  }, [frames, traversal, treeNodes, rootId, searchTarget, insertValue, deleteValue]);
 
   const stepBack = useCallback(() => {
     setFrameIdx(i => {
@@ -592,46 +685,15 @@ export default function TreeVisualizer() {
     });
   }, [frames]);
 
-  const getQuizNodeState = (id) => {
-    if (id === wrongNode) return 'wrong';
-    if (quizClicks.includes(id)) return 'correct';
-    return '';
-  };
-
   const getNodeClass = (id) => {
     if (quizMode) {
-      const qs = getQuizNodeState(id);
-      return `tree-node${qs ? ' ' + qs : ''}`;
+      if (id === wrongNode) return 'tree-node wrong';
+      if (quizClicks.includes(id)) return 'tree-node correct';
+      return 'tree-node';
     }
     if (id === highlighted) return 'tree-node active';
     if (order.includes(id)) return 'tree-node visited';
     return 'tree-node';
-  };
-
-  const handleInsertClick = () => {
-    const val = parseInt(insertValue, 10);
-    if (isNaN(val)) return;
-    
-    let curr = rootId;
-    let depth = 1;
-    let err = null;
-    
-    while (curr != null) {
-      const node = nodeMap[curr];
-      if (val === node.value) { err = 'Value already exists!'; break; }
-      if (val < node.value) curr = node.left;
-      else curr = node.right;
-      
-      if (curr != null) depth++;
-      else if (depth + 1 > 4) err = 'Max depth of 4 reached!';
-    }
-    
-    if (err) {
-      showToast(err);
-      return;
-    }
-    
-    play();
   };
 
   const info = TRAVERSALS[traversal];
@@ -675,11 +737,24 @@ export default function TreeVisualizer() {
               <span className="ctrl-sep" />
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                 <div className="bst-stepper-wrap">
-                  <button className="btn-stepper" onClick={() => setInsertValue(v => Math.max(1, parseInt(v||0) - 1))} disabled={playing}>−</button>
-                  <input type="number" min="1" max="99" value={insertValue} onChange={e => setInsertValue(e.target.value)} className="bst-input-stepper" disabled={playing} />
-                  <button className="btn-stepper" onClick={() => setInsertValue(v => Math.min(99, parseInt(v||0) + 1))} disabled={playing}>+</button>
+                  <button className="btn-stepper" onClick={() => setInsertValue(v => Math.max(0, parseInt(v||0) - 1))} disabled={playing}>−</button>
+                  <input type="number" min="0" max="999" value={insertValue} onChange={e => setInsertValue(e.target.value)} className="bst-input-stepper" disabled={playing} />
+                  <button className="btn-stepper" onClick={() => setInsertValue(v => Math.min(999, parseInt(v||0) + 1))} disabled={playing}>+</button>
                 </div>
-                <button className="btn btn-sm btn-primary" onClick={handleInsertClick} disabled={playing}>Insert</button>
+                <button className="btn btn-sm btn-primary" onClick={play} disabled={playing}>Insert</button>
+              </div>
+            </>
+          )}
+          {traversal === 'bstDelete' && !quizMode && (
+            <>
+              <span className="ctrl-sep" />
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <div className="bst-stepper-wrap">
+                  <button className="btn-stepper" onClick={() => setDeleteValue(v => Math.max(0, parseInt(v||0) - 1))} disabled={playing}>−</button>
+                  <input type="number" min="0" max="999" value={deleteValue} onChange={e => setDeleteValue(e.target.value)} className="bst-input-stepper" disabled={playing} />
+                  <button className="btn-stepper" onClick={() => setDeleteValue(v => Math.min(999, parseInt(v||0) + 1))} disabled={playing}>+</button>
+                </div>
+                <button className="btn btn-sm btn-primary" onClick={play} disabled={playing}>Delete</button>
               </div>
             </>
           )}
@@ -693,14 +768,15 @@ export default function TreeVisualizer() {
               </div>
               <span className="ctrl-sep" />
               <div className="playback-btns">
-                {!playing
-                  ? <button className="btn btn-primary btn-icon" onClick={play} disabled={done} title="Play">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5,3 19,12 5,21" /></svg>
-                  </button>
-                  : <button className="btn btn-ghost btn-icon" onClick={() => { clearInterval(timerRef.current); setPlaying(false); }} title="Pause">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><rect x="6" y="4" width="4" height="16" /><rect x="14" y="4" width="4" height="16" /></svg>
-                  </button>
-                }
+                {traversal !== 'bstDelete' && traversal !== 'bstInsert' && (
+                  !playing
+                    ? <button className="btn btn-primary btn-icon" onClick={play} disabled={done} title="Play">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5,3 19,12 5,21" /></svg>
+                    </button>
+                    : <button className="btn btn-ghost btn-icon" onClick={() => { clearInterval(timerRef.current); setPlaying(false); }} title="Pause">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><rect x="6" y="4" width="4" height="16" /><rect x="14" y="4" width="4" height="16" /></svg>
+                    </button>
+                )}
                 <button className="btn btn-ghost btn-icon" onClick={stepBack} disabled={playing || frameIdx <= 0} title="Step back">
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="15,18 9,12 15,6" /><line x1="9" y1="18" x2="9" y2="6" />
@@ -711,11 +787,13 @@ export default function TreeVisualizer() {
                     <polyline points="9,18 15,12 9,6" /><line x1="15" y1="18" x2="15" y2="6" />
                   </svg>
                 </button>
-                <button className="btn btn-ghost btn-icon" onClick={reset} title="Reset">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 .49-3.51" />
-                  </svg>
-                </button>
+                {traversal !== 'bstDelete' && traversal !== 'bstInsert' && (
+                  <button className="btn btn-ghost btn-icon" onClick={reset} title="Reset">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 .49-3.51" />
+                    </svg>
+                  </button>
+                )}
               </div>
               <span className="ctrl-sep" />
               <button
@@ -835,7 +913,8 @@ export default function TreeVisualizer() {
               
               const cls = getNodeClass(node.id);
               const isSearchTarget = traversal === 'bstSearch' && node.value === searchTarget;
-              const finalCls = isSearchTarget ? `${cls} search-target` : cls;
+              const isDeleted = currentFrame?.deleted === node.id;
+              const finalCls = isDeleted ? `${cls} fading-out` : (isSearchTarget ? `${cls} search-target` : cls);
               
               const quizClickable = quizMode && !quizDone && !quizClicks.includes(node.id);
               const searchClickable = traversal === 'bstSearch' && !playing;
@@ -861,7 +940,9 @@ export default function TreeVisualizer() {
                   style={clickable ? { cursor: 'pointer' } : {}}
                 >
                   <circle r={R} />
-                  <text dy="0.35em" textAnchor="middle">{node.value}</text>
+                  <text dy="0.35em" textAnchor="middle">
+                    {currentFrame?.overrideValues?.[node.id] ?? node.value}
+                  </text>
                   {quizMode && stepNum >= 0 && (
                     <text dy="0.35em" dx={R + 6} textAnchor="start" fontSize="11" fill="var(--neon-green)" fontWeight="700">
                       {stepNum + 1}

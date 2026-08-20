@@ -27,9 +27,13 @@
 .tree-edge {
   stroke: var(--border);
   stroke-width: 2;
-  transition: stroke 0.3s ease;
+  transition: stroke 0.3s ease, x1 0.5s ease, y1 0.5s ease, x2 0.5s ease, y2 0.5s ease;
 }
 .tree-edge.visited { stroke: var(--neon-blue); opacity: 0.5; }
+
+.tree-node {
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
 .tree-node circle {
   fill: var(--bg-secondary);
@@ -64,6 +68,18 @@
   filter: drop-shadow(0 0 10px rgba(0,212,255,0.7));
 }
 .tree-node.active text { fill: #fff; }
+
+.tree-node.fading-out circle {
+  fill: rgba(255, 69, 58, 0.15);
+  stroke: var(--neon-red);
+  stroke-dasharray: 4;
+  opacity: 0;
+  transition: opacity 0.5s ease, fill 0.3s, stroke 0.3s;
+}
+.tree-node.fading-out text {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
 
 .tree-log h3 {
   font-size: 0.78rem;
@@ -203,8 +219,53 @@
   align-items: center;
   gap: 10px;
   margin-left: 12px;
-  flex: 1;
 }
+.speed-slider { flex: 1; }
+
+.bst-stepper-wrap {
+  display: flex;
+  align-items: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.btn-stepper {
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-stepper:hover:not(:disabled) { background: var(--bg-card-hover); }
+.btn-stepper:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.bst-input-stepper {
+  width: 40px;
+  text-align: center;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 500;
+  outline: none;
+  padding: 0;
+}
+.bst-input-stepper::-webkit-inner-spin-button, 
+.bst-input-stepper::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+
 .quiz-progress-label {
   font-size: 0.78rem;
   color: var(--text-muted);

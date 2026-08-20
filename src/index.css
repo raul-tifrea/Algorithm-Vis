@@ -1,36 +1,68 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 :root {
-  --bg-primary:    #0d0d14;
-  --bg-secondary:  #12121c;
-  --bg-card:       #17172a;
-  --bg-card-hover: #1e1e34;
-  --border:        #2a2a42;
-  --border-focus:  rgba(99, 102, 241, 0.5);
-
-  --accent:        #6366f1;
-  --accent-light:  #818cf8;
-  --accent-dim:    rgba(99, 102, 241, 0.12);
-
-  --neon-green:    #34d399;
-  --neon-yellow:   #fbbf24;
-  --neon-red:      #f87171;
-  --neon-blue:     #60a5fa;
-  --neon-purple:   #a78bfa;
-  --neon-cyan:     #22d3ee;
-
-  --text-primary:  #e2e2ee;
-  --text-muted:    #6b7280;
-  --text-dim:      #374151;
-
-  --radius-sm: 6px;
-  --radius-md: 10px;
+  /* Common / Base Variables */
+  --font-body: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', SFMono-Regular, Consolas, monospace;
+  
+  --radius-sm: 8px;
+  --radius-md: 12px;
   --radius-lg: 16px;
+  --radius-pill: 9999px;
+  
+  --transition: 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
 
-  --transition: 0.18s ease;
+:root[data-theme="dark"], :root {
+  --bg-primary: #000000;
+  --bg-secondary: #1c1c1e;
+  --bg-card: #1c1c1e;
+  --bg-card-hover: #2c2c2e;
+  --border: #38383a;
+  --border-focus: #0a84ff;
 
-  --font-body: 'Space Grotesk', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --accent: #0a84ff;
+  --accent-light: #5e5ce6;
+  --accent-dim: rgba(10, 132, 255, 0.15);
+
+  --neon-green: #30d158;
+  --neon-yellow: #ffd60a;
+  --neon-red: #ff453a;
+  --neon-blue: #0a84ff;
+  --neon-purple: #bf5af2;
+  --neon-cyan: #64d2ff;
+
+  --text-primary: #ffffff;
+  --text-muted: #8e8e93;
+  --text-dim: #636366;
+  
+  --material-bg: rgba(28, 28, 30, 0.75);
+}
+
+:root[data-theme="light"] {
+  --bg-primary: #f2f2f7;
+  --bg-secondary: #ffffff;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f2f2f7;
+  --border: #e5e5ea;
+  --border-focus: #007aff;
+
+  --accent: #007aff;
+  --accent-light: #5856d6;
+  --accent-dim: rgba(0, 122, 255, 0.15);
+
+  --neon-green: #34c759;
+  --neon-yellow: #ffcc00;
+  --neon-red: #ff3b30;
+  --neon-blue: #007aff;
+  --neon-purple: #af52de;
+  --neon-cyan: #32ade6;
+
+  --text-primary: #000000;
+  --text-muted: #8e8e93;
+  --text-dim: #aeaeb2;
+  
+  --material-bg: rgba(255, 255, 255, 0.75);
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -57,10 +89,7 @@ p  { color: var(--text-muted); }
 code, .mono { font-family: var(--font-mono); }
 
 .gradient-text {
-  background: linear-gradient(135deg, var(--accent-light), var(--neon-purple));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--accent);
 }
 
 .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
@@ -84,11 +113,12 @@ code, .mono { font-family: var(--font-mono); }
 .btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
-  padding: 8px 16px;
-  border-radius: var(--radius-sm);
+  padding: 10px 18px;
+  border-radius: var(--radius-pill);
   font-family: var(--font-body);
-  font-size: 0.88rem;
+  font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
   border: 1px solid transparent;
@@ -96,7 +126,7 @@ code, .mono { font-family: var(--font-mono); }
   user-select: none;
   white-space: nowrap;
 }
-.btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
 .btn-primary {
   background: var(--accent);

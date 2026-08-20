@@ -1,6 +1,8 @@
 import TreeVisualizer from '../visualizers/TreeVisualizer';
 import './PageLayout.css';
 
+const TREE_ALGOS = ['In-order', 'Pre-order', 'Post-order', 'BST Search', 'BST Insert', 'BST Delete'];
+
 const TreeIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <circle cx="12" cy="4" r="2" /><circle cx="6" cy="14" r="2" /><circle cx="18" cy="14" r="2" />

@@ -63,10 +63,6 @@ export default function Home() {
           An interactive playground for sorting algorithms, tree traversals,
           and graph searches — step by step, frame by frame.
         </p>
-        <div className="hero-actions">
-          <Link to="/sorting" className="btn btn-primary">Start with Sorting</Link>
-          <Link to="/graphs" className="btn btn-ghost">Graph Algorithms</Link>
-        </div>
       </section>
 
       <section className="bento">
