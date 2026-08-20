@@ -17,6 +17,7 @@
   --neon-red:      #f87171;
   --neon-blue:     #60a5fa;
   --neon-purple:   #a78bfa;
+  --neon-cyan:     #22d3ee;
 
   --text-primary:  #e2e2ee;
   --text-muted:    #6b7280;
@@ -150,6 +151,8 @@ code, .mono { font-family: var(--font-mono); }
 .badge-purple { background: rgba(167,139,250,0.12); color: var(--neon-purple); border: 1px solid rgba(167,139,250,0.2); }
 .badge-green  { background: rgba(52,211,153,0.12);  color: var(--neon-green);  border: 1px solid rgba(52,211,153,0.2); }
 .badge-yellow { background: rgba(251,191,36,0.12);  color: var(--neon-yellow); border: 1px solid rgba(251,191,36,0.2); }
+.badge-cyan   { background: rgba(34,211,238,0.12);  color: var(--neon-cyan);   border: 1px solid rgba(34,211,238,0.2); }
+.badge-red    { background: rgba(248,113,113,0.12); color: var(--neon-red);    border: 1px solid rgba(248,113,113,0.2); }
 
 select {
   background: var(--bg-secondary);
@@ -165,6 +168,56 @@ select {
 }
 select:focus { border-color: var(--accent); }
 select option { background: var(--bg-card); }
+
+.bst-stepper-wrap {
+  display: flex;
+  align-items: center;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  transition: border-color var(--transition);
+}
+.bst-stepper-wrap:focus-within {
+  border-color: var(--accent);
+}
+
+.btn-stepper {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0 8px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  transition: color var(--transition);
+}
+.btn-stepper:hover:not(:disabled) {
+  color: var(--text-primary);
+}
+.btn-stepper:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.bst-input-stepper {
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  padding: 6px 0;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  outline: none;
+  width: 32px;
+  text-align: center;
+}
+.bst-input-stepper::-webkit-outer-spin-button,
+.bst-input-stepper::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.bst-input-stepper[type=number] {
+  -moz-appearance: textfield;
+}
 
 input[type=range] {
   -webkit-appearance: none;

@@ -3,6 +3,9 @@ import { createPortal } from 'react-dom';
 import { bfsTraversal } from '../algorithms/graphs/bfs';
 import { dfsTraversal } from '../algorithms/graphs/dfs';
 import { dijkstraTraversal } from '../algorithms/graphs/dijkstra';
+import { primTraversal } from '../algorithms/graphs/prim';
+import { kruskalTraversal } from '../algorithms/graphs/kruskal';
+import { bellmanFordTraversal } from '../algorithms/graphs/bellmanFord';
 import './GraphVisualizer.css';
 
 const DEFAULT_NODES = [
@@ -26,14 +29,18 @@ const DEFAULT_EDGES = [
   ['E', 'F', 4],
 ];
 
-function buildGraph(nodes, edges) {
+function buildGraph(nodes, edges, isDirected = false) {
   const adj = {};
   const adjWeighted = {};
   for (const n of nodes) { adj[n.id] = []; adjWeighted[n.id] = []; }
   for (const [u, v, w] of edges) {
     const weight = w ?? 1;
-    adj[u].push(v); adj[v].push(u);
-    adjWeighted[u].push({ node: v, weight }); adjWeighted[v].push({ node: u, weight });
+    adj[u].push(v);
+    adjWeighted[u].push({ node: v, weight });
+    if (!isDirected) {
+      adj[v].push(u);
+      adjWeighted[v].push({ node: u, weight });
+    }
   }
   const map = Object.fromEntries(nodes.map(n => [n.id, n]));
   return { adj, adjWeighted, map };
@@ -41,7 +48,7 @@ function buildGraph(nodes, edges) {
 
 const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
-function generateRandomGraph() {
+function generateRandomGraph(algo = 'bfs') {
   const count = 6 + Math.floor(Math.random() * 4); // 6 to 9 nodes
   const ids = LETTERS.slice(0, count).split('');
   const SVG_W = 700, SVG_H = 480;
@@ -78,9 +85,18 @@ function generateRandomGraph() {
   const edges = [];
   const edgeSet = new Set();
   const addEdge = (u, v) => {
-    const key = [u, v].sort().join('-');
-    const weight = 1 + Math.floor(Math.random() * 9);
-    if (!edgeSet.has(key)) { edgeSet.add(key); edges.push([u, v, weight]); }
+    let finalU = u;
+    let finalV = v;
+    if (algo === 'bellmanFord' && Math.random() > 0.5) {
+      finalU = v;
+      finalV = u;
+    }
+    const key = [finalU, finalV].sort().join('-');
+    let weight = 1 + Math.floor(Math.random() * 9);
+    if (algo === 'bellmanFord' && Math.random() < 0.3) {
+      weight = -Math.floor(Math.random() * 5 + 1); // Negative weights for Bellman-Ford
+    }
+    if (!edgeSet.has(key)) { edgeSet.add(key); edges.push([finalU, finalV, weight]); }
   };
 
   for (let i = 1; i < nodeIds.length; i++) {
@@ -99,76 +115,611 @@ function generateRandomGraph() {
 }
 
 const CODE_SNIPPETS = {
-  bfs: `function bfs(startNode) {
+  bfs: {
+    javascript: `function bfs(startNode) {
+  // Use a queue to keep track of nodes to visit next
   let queue = [startNode];
+  // Keep track of visited nodes to avoid cycles
   let visited = new Set([startNode]);
 
   while (queue.length > 0) {
-    let node = queue.shift(); // Get FIRST item
+    // Dequeue the first node
+    let node = queue.shift();
     console.log(node);
 
+    // Explore all neighbors
     for (let neighbor of node.neighbors) {
       if (!visited.has(neighbor)) {
+        // Mark as visited and enqueue
         visited.add(neighbor);
-        queue.push(neighbor); // Add to END
+        queue.push(neighbor);
       }
     }
   }
 }`,
-
-  dfs: `function dfs(startNode) {
+    python: `def bfs(start_node):
+    # Use a queue to keep track of nodes to visit next
+    queue = [start_node]
+    # Keep track of visited nodes to avoid cycles
+    visited = {start_node}
+    
+    while queue:
+        # Dequeue the first node
+        node = queue.pop(0)
+        print(node)
+        
+        # Explore all neighbors
+        for neighbor in node.neighbors:
+            if neighbor not in visited:
+                # Mark as visited and enqueue
+                visited.add(neighbor)
+                queue.append(neighbor)`,
+    java: `public static void bfs(Node startNode) {
+    // Use a queue to keep track of nodes to visit next
+    Queue<Node> queue = new LinkedList<>();
+    // Keep track of visited nodes to avoid cycles
+    Set<Node> visited = new HashSet<>();
+    
+    queue.add(startNode);
+    visited.add(startNode);
+    
+    while (!queue.isEmpty()) {
+        // Dequeue the first node
+        Node node = queue.poll();
+        System.out.println(node);
+        
+        // Explore all neighbors
+        for (Node neighbor : node.neighbors) {
+            if (!visited.contains(neighbor)) {
+                // Mark as visited and enqueue
+                visited.add(neighbor);
+                queue.add(neighbor);
+            }
+        }
+    }
+}`,
+    cpp: `void bfs(Node* startNode) {
+    // Use a queue to keep track of nodes to visit next
+    std::queue<Node*> queue;
+    // Keep track of visited nodes to avoid cycles
+    std::unordered_set<Node*> visited;
+    
+    queue.push(startNode);
+    visited.insert(startNode);
+    
+    while (!queue.empty()) {
+        // Dequeue the first node
+        Node* node = queue.front();
+        queue.pop();
+        std::cout << node << "\\n";
+        
+        // Explore all neighbors
+        for (Node* neighbor : node->neighbors) {
+            if (visited.find(neighbor) == visited.end()) {
+                // Mark as visited and enqueue
+                visited.insert(neighbor);
+                queue.push(neighbor);
+            }
+        }
+    }
+}`
+  },
+  dfs: {
+    javascript: `function dfs(startNode) {
+  // Use a stack to explore as deep as possible
   let stack = [startNode];
+  // Keep track of visited nodes to avoid cycles
   let visited = new Set([startNode]);
 
   while (stack.length > 0) {
-    let node = stack.pop(); // Get LAST item
+    // Pop the last node
+    let node = stack.pop();
     console.log(node);
 
+    // Explore all neighbors
     for (let neighbor of node.neighbors) {
       if (!visited.has(neighbor)) {
+        // Mark as visited and push to stack
         visited.add(neighbor);
-        stack.push(neighbor); // Add to TOP
+        stack.push(neighbor);
       }
     }
   }
 }`,
-
-  dijkstra: `function dijkstra(graph, start) {
-  let distances = {}; // Shortest distance to each node
-  let visited = new Set();
-  let frontier = { [start]: 0 };
-
-  for (let node in graph) {
-    distances[node] = Infinity; // Unknown at start
-  }
-  distances[start] = 0;
-
-  while (Object.keys(frontier).length > 0) {
-    // Pick the unvisited node with smallest distance
-    let current = Object.keys(frontier)
-      .reduce((a, b) => frontier[a] < frontier[b] ? a : b);
-
-    delete frontier[current];
-    visited.add(current);
-
-    for (let { node, weight } of graph[current]) {
-      if (visited.has(node)) continue;
-
-      let newDist = distances[current] + weight;
-      if (newDist < distances[node]) {
-        distances[node] = newDist; // Found a shorter path!
-        frontier[node] = newDist;
+    python: `def dfs(start_node):
+    # Use a stack to explore as deep as possible
+    stack = [start_node]
+    # Keep track of visited nodes to avoid cycles
+    visited = {start_node}
+    
+    while stack:
+        # Pop the last node
+        node = stack.pop()
+        print(node)
+        
+        # Explore all neighbors
+        for neighbor in node.neighbors:
+            if neighbor not in visited:
+                # Mark as visited and push to stack
+                visited.add(neighbor)
+                stack.append(neighbor)`,
+    java: `public static void dfs(Node startNode) {
+    // Use a stack to explore as deep as possible
+    Stack<Node> stack = new Stack<>();
+    // Keep track of visited nodes to avoid cycles
+    Set<Node> visited = new HashSet<>();
+    
+    stack.push(startNode);
+    visited.add(startNode);
+    
+    while (!stack.isEmpty()) {
+        // Pop the last node
+        Node node = stack.pop();
+        System.out.println(node);
+        
+        // Explore all neighbors
+        for (Node neighbor : node.neighbors) {
+            if (!visited.contains(neighbor)) {
+                // Mark as visited and push to stack
+                visited.add(neighbor);
+                stack.push(neighbor);
+            }
+        }
+    }
+}`,
+    cpp: `void dfs(Node* startNode) {
+    // Use a stack to explore as deep as possible
+    std::stack<Node*> stack;
+    // Keep track of visited nodes to avoid cycles
+    std::unordered_set<Node*> visited;
+    
+    stack.push(startNode);
+    visited.insert(startNode);
+    
+    while (!stack.empty()) {
+        // Pop the last node
+        Node* node = stack.top();
+        stack.pop();
+        std::cout << node << "\\n";
+        
+        // Explore all neighbors
+        for (Node* neighbor : node->neighbors) {
+            if (visited.find(neighbor) == visited.end()) {
+                // Mark as visited and push to stack
+                visited.insert(neighbor);
+                stack.push(neighbor);
+            }
+        }
+    }
+}`
+  },
+  dijkstra: {
+    javascript: `function dijkstra(graph, start) {
+  // Initialize distances to infinity
+  let dist = {};
+  for (let node in graph) dist[node] = Infinity;
+  dist[start] = 0; // Distance to source is 0
+  
+  let unvisited = new Set(Object.keys(graph));
+  
+  while (unvisited.size > 0) {
+    // Find unvisited node with minimum distance
+    let u = getMinDistNode(unvisited, dist);
+    unvisited.delete(u);
+    
+    // Update distances for all neighbors
+    for (let neighbor of graph[u]) {
+      let alt = dist[u] + neighbor.weight;
+      if (alt < dist[neighbor.node]) {
+        // A shorter path to the neighbor was found
+        dist[neighbor.node] = alt;
       }
     }
   }
-  return distances;
+  return dist;
 }`,
+    python: `def dijkstra(graph, start):
+    # Initialize distances to infinity
+    dist = {node: float('inf') for node in graph}
+    dist[start] = 0 # Distance to source is 0
+    unvisited = set(graph.keys())
+    
+    while unvisited:
+        # Find unvisited node with minimum distance
+        u = min(unvisited, key=lambda node: dist[node])
+        unvisited.remove(u)
+        
+        # Update distances for all neighbors
+        for neighbor, weight in graph[u]:
+            alt = dist[u] + weight
+            if alt < dist[neighbor]:
+                # A shorter path to the neighbor was found
+                dist[neighbor] = alt
+    return dist`,
+    java: `public static Map<Node, Integer> dijkstra(Graph graph, Node start) {
+    // Initialize distances and priority queue
+    Map<Node, Integer> dist = new HashMap<>();
+    PriorityQueue<Node> pq = new PriorityQueue<>(Comparator.comparingInt(dist::get));
+    
+    for (Node node : graph.getNodes()) dist.put(node, Integer.MAX_VALUE);
+    dist.put(start, 0); // Distance to source is 0
+    pq.add(start);
+    
+    while (!pq.isEmpty()) {
+        // Extract node with minimum distance
+        Node u = pq.poll();
+        
+        // Update distances for all neighbors
+        for (Edge edge : u.getEdges()) {
+            Node v = edge.getTarget();
+            int alt = dist.get(u) + edge.getWeight();
+            if (alt < dist.get(v)) {
+                // A shorter path to the neighbor was found
+                dist.put(v, alt);
+                pq.add(v);
+            }
+        }
+    }
+    return dist;
+}`,
+    cpp: `std::map<Node*, int> dijkstra(Graph& graph, Node* start) {
+    // Initialize distances and priority queue
+    std::map<Node*, int> dist;
+    auto cmp = [&dist](Node* a, Node* b) { return dist[a] > dist[b]; };
+    std::priority_queue<Node*, std::vector<Node*>, decltype(cmp)> pq(cmp);
+    
+    for (Node* node : graph.nodes) dist[node] = INT_MAX;
+    dist[start] = 0; // Distance to source is 0
+    pq.push(start);
+    
+    while (!pq.empty()) {
+        // Extract node with minimum distance
+        Node* u = pq.top();
+        pq.pop();
+        
+        // Update distances for all neighbors
+        for (Edge& edge : u->edges) {
+            Node* v = edge.target;
+            int alt = dist[u] + edge.weight;
+            if (alt < dist[v]) {
+                // A shorter path to the neighbor was found
+                dist[v] = alt;
+                pq.push(v);
+            }
+        }
+    }
+    return dist;
+}`
+  },
+  bellmanFord: {
+    javascript: `function bellmanFord(graph, start) {
+  // Initialize distances
+  let dist = {};
+  for (let node in graph) dist[node] = Infinity;
+  dist[start] = 0; // Source is 0
+  
+  let V = Object.keys(graph).length;
+  
+  // Relax all edges V-1 times
+  for (let i = 0; i < V - 1; i++) {
+    for (let u in graph) {
+      if (dist[u] === Infinity) continue;
+      
+      for (let neighbor of graph[u]) {
+        let v = neighbor.node;
+        let weight = neighbor.weight;
+        
+        // If a shorter path is found, update it
+        if (dist[u] + weight < dist[v]) {
+          dist[v] = dist[u] + weight;
+        }
+      }
+    }
+  }
+  
+  // Final check for negative cycles
+  for (let u in graph) {
+    if (dist[u] === Infinity) continue;
+    for (let neighbor of graph[u]) {
+      if (dist[u] + neighbor.weight < dist[neighbor.node]) {
+        console.log("Negative cycle detected!");
+      }
+    }
+  }
+  return dist;
+}`,
+    python: `def bellman_ford(graph, start):
+    # Initialize distances
+    dist = {node: float('inf') for node in graph}
+    dist[start] = 0 # Source is 0
+    
+    # Relax all edges V-1 times
+    for _ in range(len(graph) - 1):
+        for u in graph:
+            if dist[u] == float('inf'): continue
+            
+            for v, weight in graph[u]:
+                # If a shorter path is found, update it
+                if dist[u] + weight < dist[v]:
+                    dist[v] = dist[u] + weight
+                    
+    # Final check for negative cycles
+    for u in graph:
+        if dist[u] == float('inf'): continue
+        for v, weight in graph[u]:
+            if dist[u] + weight < dist[v]:
+                print("Negative cycle detected!")
+    return dist`,
+    java: `public static Map<Node, Integer> bellmanFord(Graph graph, Node start) {
+    // Initialize distances
+    Map<Node, Integer> dist = new HashMap<>();
+    for (Node node : graph.getNodes()) dist.put(node, Integer.MAX_VALUE);
+    dist.put(start, 0);
+    
+    int V = graph.getNodes().size();
+    
+    // Relax all edges V-1 times
+    for (int i = 0; i < V - 1; i++) {
+        for (Node u : graph.getNodes()) {
+            if (dist.get(u) == Integer.MAX_VALUE) continue;
+            
+            for (Edge edge : u.getEdges()) {
+                Node v = edge.getTarget();
+                // If a shorter path is found, update it
+                if (dist.get(u) + edge.getWeight() < dist.get(v)) {
+                    dist.put(v, dist.get(u) + edge.getWeight());
+                }
+            }
+        }
+    }
+    
+    // Final check for negative cycles
+    for (Node u : graph.getNodes()) {
+        if (dist.get(u) == Integer.MAX_VALUE) continue;
+        for (Edge edge : u.getEdges()) {
+            if (dist.get(u) + edge.getWeight() < dist.get(edge.getTarget())) {
+                System.out.println("Negative cycle detected!");
+            }
+        }
+    }
+    return dist;
+}`,
+    cpp: `std::map<Node*, int> bellmanFord(Graph& graph, Node* start) {
+    // Initialize distances
+    std::map<Node*, int> dist;
+    for (Node* node : graph.nodes) dist[node] = INT_MAX;
+    dist[start] = 0;
+    
+    int V = graph.nodes.size();
+    
+    // Relax all edges V-1 times
+    for (int i = 0; i < V - 1; i++) {
+        for (Node* u : graph.nodes) {
+            if (dist[u] == INT_MAX) continue;
+            
+            for (Edge& edge : u->edges) {
+                Node* v = edge.target;
+                // If a shorter path is found, update it
+                if (dist[u] + edge.weight < dist[v]) {
+                    dist[v] = dist[u] + edge.weight;
+                }
+            }
+        }
+    }
+    
+    // Final check for negative cycles
+    for (Node* u : graph.nodes) {
+        if (dist[u] == INT_MAX) continue;
+        for (Edge& edge : u->edges) {
+            if (dist[u] + edge.weight < dist[edge.target]) {
+                std::cout << "Negative cycle detected!\\n";
+            }
+        }
+    }
+    return dist;
+}`
+  },
+  prim: {
+    javascript: `function prim(graph, start) {
+  // Set to keep track of nodes in the Minimum Spanning Tree (MST)
+  let mst = new Set();
+  let key = {};
+  for (let node in graph) key[node] = Infinity;
+  key[start] = 0; // Start building the tree from the start node
+
+  while (mst.size < Object.keys(graph).length) {
+    // Find the node with the minimum edge weight connecting to the MST
+    let u = getMinKeyNode(key, mst);
+    if (!u) break;
+    mst.add(u);
+
+    // Update weights of adjacent vertices
+    for (let neighbor of graph[u]) {
+      if (!mst.has(neighbor.node) && neighbor.weight < key[neighbor.node]) {
+        key[neighbor.node] = neighbor.weight;
+      }
+    }
+  }
+}`,
+    python: `def prim(graph, start):
+    # Set to keep track of nodes in the Minimum Spanning Tree (MST)
+    mst = set()
+    key = {node: float('inf') for node in graph}
+    key[start] = 0 # Start building the tree from the start node
+    
+    while len(mst) < len(graph):
+        # Find the node with the minimum edge weight connecting to the MST
+        u = min((node for node in graph if node not in mst), key=lambda x: key[x])
+        mst.add(u)
+        
+        # Update weights of adjacent vertices
+        for neighbor, weight in graph[u]:
+            if neighbor not in mst and weight < key[neighbor]:
+                key[neighbor] = weight`,
+    java: `public static void prim(Graph graph, Node start) {
+    // Set to keep track of nodes in the Minimum Spanning Tree (MST)
+    Set<Node> mst = new HashSet<>();
+    Map<Node, Integer> key = new HashMap<>();
+    PriorityQueue<Node> pq = new PriorityQueue<>(Comparator.comparingInt(key::get));
+    
+    for (Node node : graph.getNodes()) key.put(node, Integer.MAX_VALUE);
+    key.put(start, 0); // Start building the tree from the start node
+    pq.add(start);
+    
+    while (!pq.isEmpty()) {
+        // Find the node with the minimum edge weight connecting to the MST
+        Node u = pq.poll();
+        if (mst.contains(u)) continue;
+        mst.add(u);
+        
+        // Update weights of adjacent vertices
+        for (Edge edge : u.getEdges()) {
+            Node v = edge.getTarget();
+            if (!mst.contains(v) && edge.getWeight() < key.get(v)) {
+                key.put(v, edge.getWeight());
+                pq.add(v);
+            }
+        }
+    }
+}`,
+    cpp: `void prim(Graph& graph, Node* start) {
+    // Set to keep track of nodes in the Minimum Spanning Tree (MST)
+    std::unordered_set<Node*> mst;
+    std::map<Node*, int> key;
+    auto cmp = [&key](Node* a, Node* b) { return key[a] > key[b]; };
+    std::priority_queue<Node*, std::vector<Node*>, decltype(cmp)> pq(cmp);
+    
+    for (Node* node : graph.nodes) key[node] = INT_MAX;
+    key[start] = 0; // Start building the tree from the start node
+    pq.push(start);
+    
+    while (!pq.empty()) {
+        // Find the node with the minimum edge weight connecting to the MST
+        Node* u = pq.top();
+        pq.pop();
+        if (mst.count(u)) continue;
+        mst.insert(u);
+        
+        // Update weights of adjacent vertices
+        for (Edge& edge : u->edges) {
+            Node* v = edge.target;
+            if (!mst.count(v) && edge.weight < key[v]) {
+                key[v] = edge.weight;
+                pq.push(v);
+            }
+        }
+    }
+}`
+  },
+  kruskal: {
+    javascript: `function kruskal(graph) {
+  let mst = [];
+  // 1. Sort all edges in non-decreasing order of their weight
+  let edges = getAllEdgesSortedByWeight(graph);
+  
+  // 2. Initialize disjoint sets (Union-Find)
+  let parent = {};
+  for (let node in graph) parent[node] = node;
+  
+  // Helper to find root parent of a set
+  function find(i) {
+    if (parent[i] === i) return i;
+    return find(parent[i]);
+  }
+  
+  // 3. Process edges one by one
+  for (let edge of edges) {
+    let rootU = find(edge.u);
+    let rootV = find(edge.v);
+    
+    // If including this edge doesn't form a cycle, include it
+    if (rootU !== rootV) {
+      parent[rootU] = rootV;
+      mst.push(edge);
+    }
+  }
+  return mst;
+}`,
+    python: `def kruskal(graph):
+    mst = []
+    # 1. Sort all edges in non-decreasing order of their weight
+    edges = get_all_edges_sorted(graph)
+    
+    # 2. Initialize disjoint sets (Union-Find)
+    parent = {node: node for node in graph}
+    
+    # Helper to find root parent of a set
+    def find(i):
+        if parent[i] == i:
+            return i
+        return find(parent[i])
+        
+    # 3. Process edges one by one
+    for u, v, weight in edges:
+        root_u = find(u)
+        root_v = find(v)
+        
+        # If including this edge doesn't form a cycle, include it
+        if root_u != root_v:
+            parent[root_u] = root_v
+            mst.append((u, v, weight))
+    return mst`,
+    java: `public static List<Edge> kruskal(Graph graph) {
+    List<Edge> mst = new ArrayList<>();
+    // 1. Sort all edges in non-decreasing order of their weight
+    List<Edge> edges = graph.getAllEdges();
+    Collections.sort(edges, Comparator.comparingInt(Edge::getWeight));
+    
+    // 2. Initialize disjoint sets (Union-Find)
+    Map<Node, Node> parent = new HashMap<>();
+    for (Node node : graph.getNodes()) parent.put(node, node);
+    
+    // 3. Process edges one by one
+    for (Edge edge : edges) {
+        Node rootU = find(parent, edge.getU());
+        Node rootV = find(parent, edge.getV());
+        
+        // If including this edge doesn't form a cycle, include it
+        if (!rootU.equals(rootV)) {
+            parent.put(rootU, rootV);
+            mst.add(edge);
+        }
+    }
+    return mst;
+}`,
+    cpp: `std::vector<Edge> kruskal(Graph& graph) {
+    std::vector<Edge> mst;
+    // 1. Sort all edges in non-decreasing order of their weight
+    std::vector<Edge> edges = graph.getAllEdges();
+    std::sort(edges.begin(), edges.end(), [](Edge& a, Edge& b) { return a.weight < b.weight; });
+    
+    // 2. Initialize disjoint sets (Union-Find)
+    std::map<Node*, Node*> parent;
+    for (Node* node : graph.nodes) parent[node] = node;
+    
+    // 3. Process edges one by one
+    for (Edge& edge : edges) {
+        Node* rootU = find(parent, edge.u);
+        Node* rootV = find(parent, edge.v);
+        
+        // If including this edge doesn't form a cycle, include it
+        if (rootU != rootV) {
+            parent[rootU] = rootV;
+            mst.push_back(edge);
+        }
+    }
+    return mst;
+}`
+  }
 };
 
 const ALGORITHMS = {
-  bfs: { fn: bfsTraversal, label: 'BFS', fullLabel: 'Breadth-First Search', desc: 'Explores level by level using a queue', badge: 'badge-blue' },
-  dfs: { fn: dfsTraversal, label: 'DFS', fullLabel: 'Depth-First Search', desc: 'Explores as deep as possible using a stack', badge: 'badge-purple' },
-  dijkstra: { fn: dijkstraTraversal, label: 'Dijkstra', fullLabel: "Dijkstra's Shortest Path", desc: 'Finds shortest paths from a source using weights', badge: 'badge-yellow' },
+  bfs: { fn: bfsTraversal, label: 'BFS', fullLabel: 'Breadth-First Search', desc: 'Explores level by level using a queue', badge: 'badge-blue', explanation: 'Works on directed or undirected unweighted graphs. Starting from a selected node, BFS explores all of its immediate neighbors before moving to the next level neighbors. It guarantees the shortest path in an unweighted graph.' },
+  dfs: { fn: dfsTraversal, label: 'DFS', fullLabel: 'Depth-First Search', desc: 'Explores as deep as possible using a stack', badge: 'badge-purple', explanation: 'Works on directed or undirected unweighted graphs. Explores as far as possible along each branch before backtracking. It uses a stack (or recursion) and is often used for topological sorting or cycle detection.' },
+  dijkstra: { fn: dijkstraTraversal, label: 'Dijkstra', fullLabel: "Dijkstra's Shortest Path", desc: 'Finds shortest paths from a source using weights', badge: 'badge-yellow', explanation: 'Works on directed or undirected graphs with non-negative edge weights. Finds the shortest path from a starting node to all other reachable nodes by continually expanding the shortest known path.' },
+  bellmanFord: { fn: bellmanFordTraversal, label: 'Bellman-Ford', fullLabel: 'Bellman-Ford', desc: 'Finds shortest paths, handling negative weights', badge: 'badge-red', explanation: 'Works on directed weighted graphs (can handle negative weights). Computes shortest paths from a single source vertex to all other vertices by iteratively relaxing all edges |V|-1 times.' },
+  prim: { fn: primTraversal, label: 'Prim', fullLabel: "Prim's MST", desc: 'Finds Minimum Spanning Tree from a start node', badge: 'badge-green', explanation: 'Works on undirected weighted graphs. A greedy algorithm that finds a minimum spanning tree by building the tree one vertex at a time, always selecting the cheapest connection to an unvisited node.' },
+  kruskal: { fn: kruskalTraversal, label: 'Kruskal', fullLabel: "Kruskal's MST", desc: 'Finds Minimum Spanning Tree by sorting edges', badge: 'badge-cyan', explanation: 'Works on undirected weighted graphs. Finds a minimum spanning tree by sorting all edges by weight and iteratively adding the smallest edge that does not form a cycle, using a Union-Find set.' },
 };
 
 const START_NODE = 'A';
@@ -177,36 +728,39 @@ const SVG_H = 480;
 const R = 24;
 
 function highlight(code) {
-  const keywords = /\b(function|return|const|let|if|else|while|for|of|new|continue|true|false)\b/g;
-  const comments = /(\/\/[^\n]*)/g;
-  const numbers = /\b(\d+)\b/g;
-  const strings = /('[^']*'|"[^"]*")/g;
-  return code
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    .replace(strings, '<span class="tok-str">$1</span>')
-    .replace(comments, '<span class="tok-comment">$1</span>')
-    .replace(keywords, '<span class="tok-kw">$1</span>')
-    .replace(numbers, '<span class="tok-num">$1</span>');
+  let html = code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const regex = /(\/\/[^\n]*)|('[^']*'|"[^"]*")|\b(function|return|const|let|if|else|while|for|of|new|import|export|default|continue|true|false|null|def|class|public|static|void|int|bool|size_t|std|vector|auto|decltype)\b|\b(\d+)\b/g;
+  
+  return html.replace(regex, (match, p1, p2, p3, p4) => {
+    if (p1) return `<span class="tok-comment">${p1}</span>`;
+    if (p2) return `<span class="tok-str">${p2}</span>`;
+    if (p3) return `<span class="tok-kw">${p3}</span>`;
+    if (p4) return `<span class="tok-num">${p4}</span>`;
+    return match;
+  });
 }
 
 export default function GraphVisualizer() {
   const [algo, setAlgo] = useState('bfs');
+  const [codeLang, setCodeLang] = useState('javascript');
   const [speed, setSpeed] = useState(50);
   const [frames, setFrames] = useState([]);
   const [frameIdx, setFrameIdx] = useState(-1);
   const [playing, setPlaying] = useState(false);
   const [done, setDone] = useState(false);
   const [showCode, setShowCode] = useState(false);
+  const [showDesc, setShowDesc] = useState(false);
   const timerRef = useRef(null);
 
   const [graphNodes, setGraphNodes] = useState(DEFAULT_NODES);
   const [graphEdges, setGraphEdges] = useState(DEFAULT_EDGES);
 
-  const { adj: ADJACENCY, adjWeighted: ADJACENCY_W, map: NODE_MAP } = buildGraph(graphNodes, graphEdges);
+  const isDirected = algo === 'bellmanFord';
+  const { adj: ADJACENCY, adjWeighted: ADJACENCY_W, map: NODE_MAP } = buildGraph(graphNodes, graphEdges, isDirected);
   const START_NODE = graphNodes[0]?.id ?? 'A';
 
   function getGraphForAlgo(algoKey, adj, adjW) {
-    return algoKey === 'dijkstra' ? adjW : adj;
+    return (algoKey === 'dijkstra' || algoKey === 'bellmanFord' || algoKey === 'prim' || algoKey === 'kruskal') ? adjW : adj;
   }
 
   const [quizMode, setQuizMode] = useState(false);
@@ -228,19 +782,34 @@ export default function GraphVisualizer() {
   const previous = currentFrame?.previous ?? null;
   const dijkFrontier = currentFrame?.frontier ?? {};
   const bfsDfsFrontier = currentFrame?.inQueue ?? currentFrame?.inStack ?? new Set();
-  const frontier = algo === 'dijkstra' ? new Set(Object.keys(dijkFrontier)) : bfsDfsFrontier;
+  const frontier = (algo === 'dijkstra' || algo === 'bellmanFord' || algo === 'prim') ? new Set(Object.keys(dijkFrontier)) : bfsDfsFrontier;
+  const mstEdges = currentFrame?.mstEdges ?? [];
   const path = currentFrame?.path ?? [];
 
   function computeAnswer(algoKey, adj, adjW, startId) {
     const graphArg = getGraphForAlgo(algoKey, adj, adjW);
     const fs = ALGORITHMS[algoKey].fn(graphArg, startId);
     const order = [];
-    let prev = null;
-    for (const f of fs) {
-      if (f.current && !order.includes(f.current)) order.push(f.current);
-      if (f.previous) prev = f.previous;
+    
+    if (algoKey === 'kruskal') {
+      for (const f of fs) {
+        if (f.mstEdges && f.mstEdges.length > order.length) {
+          const newEdge = f.mstEdges[f.mstEdges.length - 1];
+          const edgeStr = [newEdge.u, newEdge.v].sort().join('-');
+          if (!order.includes(edgeStr)) order.push(edgeStr);
+        }
+      }
+    } else {
+      for (const f of fs) {
+        if (f.current && f.previous && f.previous[f.current]) {
+          const u = f.previous[f.current];
+          const v = f.current;
+          const edgeStr = [u, v].sort().join('-');
+          if (!order.includes(edgeStr)) order.push(edgeStr);
+        }
+      }
     }
-    return { order, previous: prev };
+    return { order, previous: null };
   }
 
   function showToast(msg) {
@@ -267,8 +836,12 @@ export default function GraphVisualizer() {
     quizStartRef.current = Date.now();
   }, [algo, ADJACENCY, ADJACENCY_W, START_NODE]);
 
-  const newRandomGraph = useCallback(() => {
-    const { nodes, edges } = generateRandomGraph();
+  const resetGraph = useCallback(() => {
+    if (playing) setPlaying(false);
+    clearTimeout(timerRef.current);
+    
+    // Pass current algo to generate negative edges if needed
+    const { nodes, edges } = generateRandomGraph(algo);
     setGraphNodes(nodes);
     setGraphEdges(edges);
     setFrames([]);
@@ -281,7 +854,7 @@ export default function GraphVisualizer() {
       setQuizDone(false);
       setQuizMistakes(0);
       setToast(null);
-      const { adj, adjWeighted } = buildGraph(nodes, edges);
+      const { adj, adjWeighted } = buildGraph(nodes, edges, isDirected);
       const startId = nodes[0]?.id ?? 'A';
       const { order, previous } = computeAnswer(algo, adj, adjWeighted, startId);
       setQuizAnswer(order);
@@ -299,11 +872,11 @@ export default function GraphVisualizer() {
     setToast(null);
   }, []);
 
-  const handleQuizClick = useCallback((nodeId) => {
+  const handleQuizClick = useCallback((id) => {
     if (quizDone) return;
     const nextExpected = quizAnswer[quizClicks.length];
-    if (nodeId === nextExpected) {
-      const newClicks = [...quizClicks, nodeId];
+    if (id === nextExpected) {
+      const newClicks = [...quizClicks, id];
       setQuizClicks(newClicks);
       if (newClicks.length === quizAnswer.length) {
         setQuizDone(true);
@@ -311,9 +884,9 @@ export default function GraphVisualizer() {
       }
     } else {
       setQuizMistakes(m => m + 1);
-      setWrongNode(nodeId);
+      setWrongNode(id);
       setTimeout(() => setWrongNode(null), 600);
-      showToast(`Wrong! The correct next node was "${nextExpected}" — it has been placed automatically.`);
+      showToast(`Wrong! The correct next edge was "${nextExpected}" — it has been placed automatically.`);
       const newClicks = [...quizClicks, nextExpected];
       setTimeout(() => {
         setQuizClicks(newClicks);
@@ -323,7 +896,13 @@ export default function GraphVisualizer() {
         }
       }, 650);
     }
-  }, [quizAnswer, quizClicks, quizDone]);
+  }, [quizAnswer, quizClicks, quizDone, algo]);
+
+  const handleNodeClickWarning = useCallback(() => {
+    if (!quizDone) {
+      showToast("Please click on the edges, not the nodes!");
+    }
+  }, [quizDone]);
 
   const reset = useCallback(() => {
     clearInterval(timerRef.current);
@@ -393,6 +972,9 @@ export default function GraphVisualizer() {
   };
 
   const isEdgeActive = (u, v) => {
+    if (algo === 'prim' || algo === 'kruskal') {
+      return mstEdges.some(e => (e.u === u && e.v === v) || (e.u === v && e.v === u));
+    }
     if (previous) {
       return previous[u] === v || previous[v] === u;
     }
@@ -403,8 +985,9 @@ export default function GraphVisualizer() {
   const structLabel = algo === 'bfs' ? 'Queue' : 'Stack';
 
   const getQuizNodeState = (id) => {
-    if (id === wrongNode) return 'wrong';
-    if (quizClicks.includes(id)) return 'correct';
+    if (id === START_NODE && quizClicks.length >= 0) return 'correct';
+    const nodeInClicks = quizClicks.some(edgeStr => edgeStr.split('-').includes(id));
+    if (nodeInClicks) return 'correct';
     return 'default';
   };
 
@@ -423,7 +1006,7 @@ export default function GraphVisualizer() {
             </button>
           ))}
           {!quizMode
-            ? <button className="btn btn-sm btn-ghost quiz-btn" onClick={startQuiz} disabled={playing} style={{ marginLeft: '8px' }}>
+            ? <button className="btn btn-sm btn-ghost quiz-btn" onClick={startQuiz} disabled={playing || algo === 'bellmanFord'} style={{ marginLeft: '8px' }} title={algo === 'bellmanFord' ? 'Quiz mode is not supported for Bellman-Ford because edge relaxation order is arbitrary' : ''}>
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
               </svg>
@@ -466,18 +1049,25 @@ export default function GraphVisualizer() {
                   </svg>
                 </button>
               </div>
+              <span className="ctrl-sep" />
               <button
                 className={`btn btn-ghost btn-sm code-toggle ${showCode ? 'active' : ''}`}
                 onClick={() => setShowCode(v => !v)}
               >
                 {showCode ? 'Hide Code' : 'Show Code'}
               </button>
+              <button
+                className={`btn btn-ghost btn-sm code-toggle ${showDesc ? 'active' : ''}`}
+                onClick={() => setShowDesc(v => !v)}
+              >
+                {showDesc ? 'Hide Info' : 'Show Info'}
+              </button>
             </>
           )}
           {quizMode && (
             <>
-              <button className="btn btn-sm btn-ghost" onClick={newRandomGraph}
-                style={{ marginLeft: '8px' }} title="Generate new random graph">
+              <button className="btn btn-sm btn-ghost" onClick={resetGraph}
+                style={{ marginLeft: '8px' }} title="Generate a new random graph">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 .49-3.51" />
                 </svg>
@@ -496,10 +1086,19 @@ export default function GraphVisualizer() {
           )}
         </div>
         {quizMode
-          ? <p className="graph-desc">Click the nodes in the correct <strong>{info.fullLabel}</strong> order starting from <strong>{START_NODE}</strong>.</p>
+          ? <p className="graph-desc">Click the edges in the correct <strong>{info.fullLabel}</strong> order{algo !== 'kruskal' && <> starting from <strong>{START_NODE}</strong></>}.</p>
           : <p className="graph-desc">{info.desc}</p>
         }
       </div>
+
+      {showDesc && !quizMode && (
+        <div className="card fade-in-up" style={{ marginBottom: '20px', background: 'var(--bg-secondary)', borderLeft: `4px solid var(--neon-${info.badge.split('-')[1] || 'blue'})`, padding: '16px 20px' }}>
+          <h3 style={{ margin: '0 0 8px 0', fontSize: '1.1rem', color: 'var(--text-primary)' }}>{info.fullLabel}</h3>
+          <p style={{ margin: 0, color: 'var(--text-muted)', lineHeight: '1.5', fontSize: '0.95rem' }}>
+            {info.explanation}
+          </p>
+        </div>
+      )}
 
       <div className="graph-main">
         <div className={`graph-canvas card ${quizMode ? 'quiz-active' : ''}`}>
@@ -521,34 +1120,49 @@ export default function GraphVisualizer() {
                   <span key={id} className="quiz-order-chip">{i + 1}. {id}</span>
                 ))}
               </div>
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <button className="btn btn-primary" onClick={startQuiz}>Try Again</button>
-                <button className="btn btn-ghost" onClick={newRandomGraph}>New Graph</button>
+              <div className="quiz-done fade-in-up">
+                <h3>Quiz Complete!</h3>
+                <p>You finished in <strong>{quizTime}s</strong> with <strong>{quizMistakes}</strong> mistakes.</p>
+                <button className="btn btn-ghost" onClick={resetGraph}>New Graph</button>
               </div>
             </div>,
             document.body
           )}
           <svg viewBox={`0 0 ${SVG_W} ${SVG_H}`} width="100%" height="100%" style={{ cursor: quizMode && !quizDone ? 'pointer' : 'default' }}>
+            <defs>
+              <marker id="arrow" markerWidth="10" markerHeight="10" refX="28" refY="3" orient="auto" markerUnits="strokeWidth">
+                <path d="M0,0 L0,6 L9,3 z" fill="var(--border)" />
+              </marker>
+              <marker id="arrow-active" markerWidth="10" markerHeight="10" refX="28" refY="3" orient="auto" markerUnits="strokeWidth">
+                <path d="M0,0 L0,6 L9,3 z" fill="var(--neon-blue)" />
+              </marker>
+            </defs>
             {graphEdges.map(([u, v, w]) => {
               const pu = NODE_MAP[u], pv = NODE_MAP[v];
               let active = false;
+              const edgeKey = [u, v].sort().join('-');
+              
               if (quizMode) {
-                if (quizPrevious) {
-                  active = quizClicks.includes(u) && quizClicks.includes(v) &&
-                    (quizPrevious[u] === v || quizPrevious[v] === u);
-                } else {
-                  active = quizClicks.includes(u) && quizClicks.includes(v);
-                }
+                active = quizClicks.includes(edgeKey);
               } else {
                 active = isEdgeActive(u, v);
               }
+              
+              const isEdgeClickable = quizMode && !quizDone && !quizClicks.includes(edgeKey);
+              
               return (
-                <g key={`${u}-${v}`}>
+                <g key={edgeKey}>
+                  {isEdgeClickable && (
+                    <line x1={pu.x} y1={pu.y} x2={pv.x} y2={pv.y} stroke="transparent" strokeWidth="20"
+                          style={{ cursor: 'pointer' }} onClick={() => handleQuizClick(edgeKey)} />
+                  )}
                   <line
                     x1={pu.x} y1={pu.y} x2={pv.x} y2={pv.y}
-                    className={`graph-edge ${active ? 'active' : ''}`}
+                    className={`graph-edge ${active ? 'active' : ''} ${algo === 'kruskal' || algo === 'prim' ? 'mst' : ''} ${edgeKey === wrongNode ? 'wrong-edge' : ''}`}
+                    style={isEdgeClickable ? { pointerEvents: 'none' } : undefined}
+                    markerEnd={isDirected ? (active ? "url(#arrow-active)" : "url(#arrow)") : undefined}
                   />
-                  {algo === 'dijkstra' && (
+                  {(algo === 'dijkstra' || algo === 'bellmanFord' || algo === 'prim' || algo === 'kruskal') && (
                     <text
                       x={(pu.x + pv.x) / 2}
                       y={(pu.y + pv.y) / 2 - 8}
@@ -563,14 +1177,14 @@ export default function GraphVisualizer() {
             })}
             {graphNodes.map(node => {
               const state = quizMode ? getQuizNodeState(node.id) : getNodeState(node.id);
-              const clickable = quizMode && !quizDone && !quizClicks.includes(node.id);
+              const nodeClickable = quizMode && !quizDone;
               return (
                 <g
                   key={node.id}
                   className={`graph-node ${state}`}
                   transform={`translate(${node.x},${node.y})`}
-                  onClick={clickable ? () => handleQuizClick(node.id) : undefined}
-                  style={clickable ? { cursor: 'pointer' } : {}}
+                  onClick={nodeClickable ? handleNodeClickWarning : undefined}
+                  style={nodeClickable ? { cursor: 'not-allowed' } : {}}
                 >
                   <circle r={R} />
                   <text dy="0.35em" textAnchor="middle">{node.id}</text>
@@ -587,13 +1201,13 @@ export default function GraphVisualizer() {
 
         {!quizMode && (
           <div className="graph-side">
-            {algo === 'dijkstra' ? (
+            {(algo === 'dijkstra' || algo === 'prim') ? (
               <div className="card graph-panel dist-panel">
-                <h3>Distances</h3>
+                <h3>{algo === 'prim' ? 'Edge Key' : 'Distances'}</h3>
                 <div className="dist-table">
                   <div className="dist-row dist-header">
                     <span>Node</span>
-                    <span>Distance</span>
+                    <span>Value</span>
                   </div>
                   {graphNodes.map(n => {
                     const d = distances ? distances[n.id] : Infinity;
@@ -643,9 +1257,9 @@ export default function GraphVisualizer() {
               <h3>Legend</h3>
               <div className="legend-items">
                 <div className="legend-item"><span className="gleg default" />Unvisited</div>
-                <div className="legend-item"><span className="gleg frontier" />In {structLabel}</div>
+                <div className="legend-item"><span className="gleg frontier" />In {algo === 'dijkstra' || algo === 'prim' ? 'Frontier' : structLabel}</div>
                 <div className="legend-item"><span className="gleg current" />Current</div>
-                <div className="legend-item"><span className="gleg visited" />Visited</div>
+                <div className="legend-item"><span className="gleg visited" />{algo === 'prim' || algo === 'kruskal' ? 'In MST' : 'Visited'}</div>
               </div>
             </div>
           </div>
@@ -656,7 +1270,7 @@ export default function GraphVisualizer() {
               <h3>Your Order</h3>
               <div className="struct-list">
                 {quizClicks.length === 0
-                  ? <span className="empty-log">Click a node</span>
+                  ? <span className="empty-log">Click an edge</span>
                   : quizClicks.map((id, i) => (
                     <div key={i} className="struct-item correct">
                       <span className="struct-idx">{i + 1}</span>
@@ -681,12 +1295,21 @@ export default function GraphVisualizer() {
       {showCode && (
         <div className="graph-code-panel card">
           <div className="code-panel-header">
-            <span className="code-panel-title">{info.fullLabel}</span>
-            <span className={`badge ${info.badge}`}>{info.label}</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <span className="code-panel-title">{info.fullLabel}</span>
+              <span className={`badge ${info.badge}`}>{info.label}</span>
+            </div>
+            <div className="code-lang-tabs">
+              {['javascript', 'python', 'java', 'cpp'].map(l => (
+                <button key={l} className={`lang-tab ${codeLang === l ? 'active' : ''}`} onClick={() => setCodeLang(l)}>
+                  {l === 'javascript' ? 'JS' : l === 'python' ? 'Python' : l === 'java' ? 'Java' : 'C++'}
+                </button>
+              ))}
+            </div>
           </div>
           <pre
             className="code-block"
-            dangerouslySetInnerHTML={{ __html: highlight(CODE_SNIPPETS[algo]) }}
+            dangerouslySetInnerHTML={{ __html: highlight(CODE_SNIPPETS[algo][codeLang] || CODE_SNIPPETS[algo].javascript) }}
           />
         </div>
       )}

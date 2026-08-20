@@ -36,18 +36,18 @@ const CATEGORIES = [
   {
     to: '/trees',
     icon: CategoryIcons.trees,
-    title: 'Tree Traversals',
+    title: 'Tree Algorithms',
     color: 'purple',
-    algorithms: ['In-order', 'Pre-order', 'Post-order'],
-    desc: 'Step through a binary tree with 4 traversal strategies.',
+    algorithms: ['In-order', 'Pre-order', 'Post-order', 'BST Search', 'BST Insert'],
+    desc: 'Step through a binary tree with traversal strategies and BST operations.',
   },
   {
     to: '/graphs',
     icon: CategoryIcons.graphs,
     title: 'Graph Algorithms',
     color: 'green',
-    algorithms: ['BFS', 'DFS', 'Dijkstra'],
-    desc: 'Explore graph traversal with BFS and DFS on an interactive graph.',
+    algorithms: ['BFS', 'DFS', 'Dijkstra', 'Bellman-Ford', 'Prim', 'Kruskal'],
+    desc: 'Explore graph traversal with algorithms — watch the frontier and visited nodes update live.',
   },
 ];
 

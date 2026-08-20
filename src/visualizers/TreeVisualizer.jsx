@@ -5,6 +5,7 @@ import {
   preorderTraversal,
   postorderTraversal,
 } from '../algorithms/trees/traversals';
+import { bstSearch, bstInsert } from '../algorithms/trees/bst';
 import './TreeVisualizer.css';
 
 const DEFAULT_TREE_NODES = [
@@ -59,36 +60,306 @@ function generateRandomTree() {
   return { nodes, rootId };
 }
 
+function generateRandomBST() {
+  const targetCount = 6 + Math.floor(Math.random() * 6); // 6 to 11 nodes
+  const MAX_DEPTH = 4;
+  let idCounter = 1;
+  const nodes = [];
+  
+  const rootValue = 40 + Math.floor(Math.random() * 20); // 40-59
+  const rootId = `n${idCounter++}`;
+  nodes.push({ id: rootId, value: rootValue, left: null, right: null });
+  
+  let attempts = 0;
+  while (nodes.length < targetCount && attempts < 100) {
+    attempts++;
+    const val = 10 + Math.floor(Math.random() * 90);
+    
+    let curr = rootId;
+    let currDepth = 1;
+    let parent = null;
+    let side = null;
+    
+    while (curr != null && currDepth < MAX_DEPTH) {
+      const node = nodes.find(n => n.id === curr);
+      if (val === node.value) break; // duplicate
+      parent = node;
+      if (val < node.value) {
+        curr = node.left;
+        side = 'left';
+      } else {
+        curr = node.right;
+        side = 'right';
+      }
+      currDepth++;
+    }
+    
+    if (curr == null && currDepth <= MAX_DEPTH && parent) {
+      const childId = `n${idCounter++}`;
+      nodes.push({ id: childId, value: val, left: null, right: null });
+      parent[side] = childId;
+    }
+  }
+  
+  return { nodes, rootId };
+}
+
+function isBST(nodes, rootId) {
+  const nodeMap = {};
+  for (let i = 0; i < nodes.length; i++) nodeMap[nodes[i].id] = nodes[i];
+  
+  function check(nodeId, min, max) {
+    if (!nodeId) return true;
+    const node = nodeMap[nodeId];
+    if (node.value <= min || node.value >= max) return false;
+    return check(node.left, min, node.value) && check(node.right, node.value, max);
+  }
+  return check(rootId, -Infinity, Infinity);
+}
+
 const CODE_SNIPPETS = {
-  inorder: `function inorder(node) {
+  inorder: {
+    javascript: `function inorder(node) {
+  // Base case: if node is null, return
   if (!node) return;
 
-  inorder(node.left);   // 1. Left
-  console.log(node);    // 2. Root
-  inorder(node.right);  // 3. Right
+  // 1. Recursively traverse the left subtree
+  inorder(node.left);
+  // 2. Visit the root node
+  console.log(node);
+  // 3. Recursively traverse the right subtree
+  inorder(node.right);
 }`,
-
-  preorder: `function preorder(node) {
+    python: `def inorder(node):
+    # Base case: if node is None, return
+    if not node: return
+    
+    # 1. Recursively traverse the left subtree
+    inorder(node.left)
+    # 2. Visit the root node
+    print(node)
+    # 3. Recursively traverse the right subtree
+    inorder(node.right)`,
+    java: `public static void inorder(Node node) {
+    // Base case: if node is null, return
+    if (node == null) return;
+    
+    // 1. Recursively traverse the left subtree
+    inorder(node.left);
+    // 2. Visit the root node
+    System.out.println(node);
+    // 3. Recursively traverse the right subtree
+    inorder(node.right);
+}`,
+    cpp: `void inorder(Node* node) {
+    // Base case: if node is null, return
+    if (!node) return;
+    
+    // 1. Recursively traverse the left subtree
+    inorder(node->left);
+    // 2. Visit the root node
+    std::cout << node << "\\n";
+    // 3. Recursively traverse the right subtree
+    inorder(node->right);
+}`
+  },
+  preorder: {
+    javascript: `function preorder(node) {
+  // Base case: if node is null, return
   if (!node) return;
 
-  console.log(node);    // 1. Root
-  preorder(node.left);  // 2. Left
-  preorder(node.right); // 3. Right
+  // 1. Visit the root node
+  console.log(node);
+  // 2. Recursively traverse the left subtree
+  preorder(node.left);
+  // 3. Recursively traverse the right subtree
+  preorder(node.right);
 }`,
-
-  postorder: `function postorder(node) {
+    python: `def preorder(node):
+    # Base case: if node is None, return
+    if not node: return
+    
+    # 1. Visit the root node
+    print(node)
+    # 2. Recursively traverse the left subtree
+    preorder(node.left)
+    # 3. Recursively traverse the right subtree
+    preorder(node.right)`,
+    java: `public static void preorder(Node node) {
+    // Base case: if node is null, return
+    if (node == null) return;
+    
+    // 1. Visit the root node
+    System.out.println(node);
+    // 2. Recursively traverse the left subtree
+    preorder(node.left);
+    // 3. Recursively traverse the right subtree
+    preorder(node.right);
+}`,
+    cpp: `void preorder(Node* node) {
+    // Base case: if node is null, return
+    if (!node) return;
+    
+    // 1. Visit the root node
+    std::cout << node << "\\n";
+    // 2. Recursively traverse the left subtree
+    preorder(node->left);
+    // 3. Recursively traverse the right subtree
+    preorder(node->right);
+}`
+  },
+  postorder: {
+    javascript: `function postorder(node) {
+  // Base case: if node is null, return
   if (!node) return;
 
-  postorder(node.left);   // 1. Left
-  postorder(node.right);  // 2. Right
-  console.log(node);      // 3. Root
+  // 1. Recursively traverse the left subtree
+  postorder(node.left);
+  // 2. Recursively traverse the right subtree
+  postorder(node.right);
+  // 3. Visit the root node
+  console.log(node);
 }`,
+    python: `def postorder(node):
+    # Base case: if node is None, return
+    if not node: return
+    
+    # 1. Recursively traverse the left subtree
+    postorder(node.left)
+    # 2. Recursively traverse the right subtree
+    postorder(node.right)
+    # 3. Visit the root node
+    print(node)`,
+    java: `public static void postorder(Node node) {
+    // Base case: if node is null, return
+    if (node == null) return;
+    
+    // 1. Recursively traverse the left subtree
+    postorder(node.left);
+    // 2. Recursively traverse the right subtree
+    postorder(node.right);
+    // 3. Visit the root node
+    System.out.println(node);
+}`,
+    cpp: `void postorder(Node* node) {
+    // Base case: if node is null, return
+    if (!node) return;
+    
+    // 1. Recursively traverse the left subtree
+    postorder(node->left);
+    // 2. Recursively traverse the right subtree
+    postorder(node->right);
+    // 3. Visit the root node
+    std::cout << node << "\\n";
+}`
+  },
+  bstSearch: {
+    javascript: `function bstSearch(node, target) {
+  while (node !== null) {
+    if (target === node.value) return node; // Found it!
+    if (target < node.value) node = node.left; // Go left
+    else node = node.right; // Go right
+  }
+  return null; // Not found
+}`,
+    python: `def bst_search(node, target):
+    while node is not None:
+        if target == node.value: return node # Found it!
+        if target < node.value: node = node.left # Go left
+        else: node = node.right # Go right
+    return None # Not found`,
+    java: `public static Node bstSearch(Node node, int target) {
+    while (node != null) {
+        if (target == node.value) return node; // Found it!
+        if (target < node.value) node = node.left; // Go left
+        else node = node.right; // Go right
+    }
+    return null; // Not found
+}`,
+    cpp: `Node* bstSearch(Node* node, int target) {
+    while (node != nullptr) {
+        if (target == node->value) return node; // Found it!
+        if (target < node->value) node = node->left; // Go left
+        else node = node->right; // Go right
+    }
+    return nullptr; // Not found
+}`
+  },
+  bstInsert: {
+    javascript: `function bstInsert(node, target) {
+  if (!node) return new Node(target);
+  
+  let curr = node;
+  while (true) {
+    if (target === curr.value) return node; // Duplicate, don't insert
+    if (target < curr.value) {
+      if (!curr.left) { curr.left = new Node(target); break; }
+      curr = curr.left;
+    } else {
+      if (!curr.right) { curr.right = new Node(target); break; }
+      curr = curr.right;
+    }
+  }
+  return node;
+}`,
+    python: `def bst_insert(node, target):
+    if not node: return Node(target)
+    
+    curr = node
+    while True:
+        if target == curr.value: return node # Duplicate, don't insert
+        if target < curr.value:
+            if not curr.left: 
+                curr.left = Node(target)
+                break
+            curr = curr.left
+        else:
+            if not curr.right: 
+                curr.right = Node(target)
+                break
+            curr = curr.right
+    return node`,
+    java: `public static Node bstInsert(Node node, int target) {
+    if (node == null) return new Node(target);
+    
+    Node curr = node;
+    while (true) {
+        if (target == curr.value) return node; // Duplicate, don't insert
+        if (target < curr.value) {
+            if (curr.left == null) { curr.left = new Node(target); break; }
+            curr = curr.left;
+        } else {
+            if (curr.right == null) { curr.right = new Node(target); break; }
+            curr = curr.right;
+        }
+    }
+    return node;
+}`,
+    cpp: `Node* bstInsert(Node* node, int target) {
+    if (!node) return new Node(target);
+    
+    Node* curr = node;
+    while (true) {
+        if (target == curr->value) return node; // Duplicate, don't insert
+        if (target < curr->value) {
+            if (!curr->left) { curr->left = new Node(target); break; }
+            curr = curr->left;
+        } else {
+            if (!curr->right) { curr->right = new Node(target); break; }
+            curr = curr->right;
+        }
+    }
+    return node;
+}`
+  }
 };
 
 const TRAVERSALS = {
-  inorder:   { fn: inorderTraversal,   label: 'In-order',   desc: 'Left → Root → Right', badge: 'badge-blue'   },
-  preorder:  { fn: preorderTraversal,  label: 'Pre-order',  desc: 'Root → Left → Right', badge: 'badge-purple' },
-  postorder: { fn: postorderTraversal, label: 'Post-order', desc: 'Left → Right → Root', badge: 'badge-yellow' },
+  inorder:   { fn: inorderTraversal,   label: 'In-order',   desc: 'Left → Root → Right', badge: 'badge-blue', explanation: 'Visits the left subtree, then the root node, and finally the right subtree. In a Binary Search Tree, this visits nodes in ascending sorted order.' },
+  preorder:  { fn: preorderTraversal,  label: 'Pre-order',  desc: 'Root → Left → Right', badge: 'badge-purple', explanation: 'Visits the root node first, then recursively visits the left subtree, followed by the right subtree. Often used to create a copy of the tree.' },
+  postorder: { fn: postorderTraversal, label: 'Post-order', desc: 'Left → Right → Root', badge: 'badge-yellow', explanation: 'Visits the left subtree, then the right subtree, and finally the root node. Often used to safely delete the tree from leaves to root.' },
+  bstSearch: { fn: bstSearch,          label: 'BST Search', desc: 'Search for a target value in a Binary Search Tree', badge: 'badge-cyan', explanation: 'Starting from the root, compares the target value to the current node. If smaller, goes left; if larger, goes right. Achieves O(log n) time on balanced trees.' },
+  bstInsert: { fn: bstInsert,          label: 'BST Insert', desc: 'Insert a new value into a Binary Search Tree', badge: 'badge-green', explanation: 'Traverses the tree exactly like a search to find the correct empty leaf spot, then places the new value there to maintain the BST sorted property.' },
 };
 
 const SVG_W = 700;
@@ -119,26 +390,31 @@ function computeTraversalAnswer(traversalKey, nodes, rootId) {
 }
 
 function highlight(code) {
-  const keywords = /\b(function|return|const|let|if|else|while|for|of|null)\b/g;
-  const comments = /(\/\/[^\n]*)/g;
-  const numbers = /\b(\d+)\b/g;
-  const strings = /('[^']*'|"[^"]*")/g;
-  return code
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    .replace(strings, '<span class="tok-str">$1</span>')
-    .replace(comments, '<span class="tok-comment">$1</span>')
-    .replace(keywords, '<span class="tok-kw">$1</span>')
-    .replace(numbers, '<span class="tok-num">$1</span>');
+  let html = code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  // Support both // (JS, Java, C++) and # (Python) comments
+  const regex = /(\/\/[^\n]*|#[^\n]*)|('[^']*'|"[^"]*")|\b(function|return|const|let|if|else|while|for|of|new|import|export|default|continue|true|false|null|def|class|public|static|void|int|bool|size_t|std|vector|auto|decltype)\b|\b(\d+)\b/g;
+  
+  return html.replace(regex, (match, p1, p2, p3, p4) => {
+    if (p1) return `<span class="tok-comment">${p1}</span>`;
+    if (p2) return `<span class="tok-str">${p2}</span>`;
+    if (p3) return `<span class="tok-kw">${p3}</span>`;
+    if (p4) return `<span class="tok-num">${p4}</span>`;
+    return match;
+  });
 }
 
 export default function TreeVisualizer() {
   const [traversal, setTraversal] = useState('inorder');
+  const [codeLang, setCodeLang] = useState('javascript');
   const [speed, setSpeed] = useState(50);
   const [frames, setFrames] = useState([]);
   const [frameIdx, setFrameIdx] = useState(-1);
   const [playing, setPlaying] = useState(false);
   const [done, setDone] = useState(false);
   const [showCode, setShowCode] = useState(false);
+  const [showDesc, setShowDesc] = useState(false);
+  const [insertValue, setInsertValue] = useState('50');
+  const [searchTarget, setSearchTarget] = useState(null);
   const timerRef = useRef(null);
 
   const [treeNodes, setTreeNodes] = useState(DEFAULT_TREE_NODES);
@@ -197,13 +473,15 @@ export default function TreeVisualizer() {
   }, [treeNodes, rootId, traversal]);
 
   const newRandomTree = useCallback(() => {
-    const { nodes, rootId: newRoot } = generateRandomTree();
+    const isBST = traversal.startsWith('bst');
+    const { nodes, rootId: newRoot } = isBST ? generateRandomBST() : generateRandomTree();
     setTreeNodes(nodes);
     setRootId(newRoot);
     setFrames([]);
     setFrameIdx(-1);
     setPlaying(false);
     setDone(false);
+    setSearchTarget(null);
     if (quizMode) {
       startQuiz(nodes, newRoot, traversal);
     }
@@ -246,13 +524,22 @@ export default function TreeVisualizer() {
 
   const play = useCallback(() => {
     if (frames.length === 0 || done) {
-      const f = TRAVERSALS[traversal].fn(treeNodes, rootId);
-      setFrames(f);
+      let target = null;
+      if (traversal === 'bstSearch') target = searchTarget ?? treeNodes[0].value;
+      if (traversal === 'bstInsert') target = parseInt(insertValue, 10);
+      
+      const res = TRAVERSALS[traversal].fn(treeNodes, rootId, target);
+      if (res.frames) {
+        setFrames(res.frames);
+        if (res.newTree) setTreeNodes(res.newTree);
+      } else {
+        setFrames(res);
+      }
       setFrameIdx(-1);
       setDone(false);
     }
     setPlaying(true);
-  }, [frames.length, done, traversal, treeNodes, rootId]);
+  }, [frames.length, done, traversal, treeNodes, rootId, searchTarget, insertValue]);
 
   useEffect(() => {
     if (playing) {
@@ -276,15 +563,26 @@ export default function TreeVisualizer() {
   const step = useCallback(() => {
     let f = frames;
     if (f.length === 0) {
-      f = TRAVERSALS[traversal].fn(treeNodes, rootId);
-      setFrames(f);
+      let target = null;
+      if (traversal === 'bstSearch') target = searchTarget ?? treeNodes[0].value;
+      if (traversal === 'bstInsert') target = parseInt(insertValue, 10);
+      
+      const res = TRAVERSALS[traversal].fn(treeNodes, rootId, target);
+      if (res.frames) {
+        f = res.frames;
+        setFrames(f);
+        if (res.newTree) setTreeNodes(res.newTree);
+      } else {
+        f = res;
+        setFrames(f);
+      }
     }
     setFrameIdx(i => {
       const next = Math.min(i + 1, f.length - 1);
       if (next === f.length - 1) setDone(true);
       return next;
     });
-  }, [frames, traversal, treeNodes, rootId]);
+  }, [frames, traversal, treeNodes, rootId, searchTarget, insertValue]);
 
   const stepBack = useCallback(() => {
     setFrameIdx(i => {
@@ -310,6 +608,32 @@ export default function TreeVisualizer() {
     return 'tree-node';
   };
 
+  const handleInsertClick = () => {
+    const val = parseInt(insertValue, 10);
+    if (isNaN(val)) return;
+    
+    let curr = rootId;
+    let depth = 1;
+    let err = null;
+    
+    while (curr != null) {
+      const node = nodeMap[curr];
+      if (val === node.value) { err = 'Value already exists!'; break; }
+      if (val < node.value) curr = node.left;
+      else curr = node.right;
+      
+      if (curr != null) depth++;
+      else if (depth + 1 > 4) err = 'Max depth of 4 reached!';
+    }
+    
+    if (err) {
+      showToast(err);
+      return;
+    }
+    
+    play();
+  };
+
   const info = TRAVERSALS[traversal];
 
   return (
@@ -320,7 +644,16 @@ export default function TreeVisualizer() {
             <button
               key={key}
               className={`btn btn-sm ${traversal === key ? 'btn-primary' : 'btn-ghost'}`}
-              onClick={() => { setTraversal(key); reset(); exitQuiz(); }}
+              onClick={() => { 
+                if (key.startsWith('bst') && !isBST(treeNodes, rootId)) {
+                  const { nodes, rootId: newRoot } = generateRandomBST();
+                  setTreeNodes(nodes);
+                  setRootId(newRoot);
+                }
+                setTraversal(key); 
+                reset(); 
+                exitQuiz(); 
+              }}
               disabled={playing}
             >
               {v.label}
@@ -337,9 +670,23 @@ export default function TreeVisualizer() {
                 Exit Quiz
               </button>
           }
+          {traversal === 'bstInsert' && !quizMode && (
+            <>
+              <span className="ctrl-sep" />
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <div className="bst-stepper-wrap">
+                  <button className="btn-stepper" onClick={() => setInsertValue(v => Math.max(1, parseInt(v||0) - 1))} disabled={playing}>−</button>
+                  <input type="number" min="1" max="99" value={insertValue} onChange={e => setInsertValue(e.target.value)} className="bst-input-stepper" disabled={playing} />
+                  <button className="btn-stepper" onClick={() => setInsertValue(v => Math.min(99, parseInt(v||0) + 1))} disabled={playing}>+</button>
+                </div>
+                <button className="btn btn-sm btn-primary" onClick={handleInsertClick} disabled={playing}>Insert</button>
+              </div>
+            </>
+          )}
           {!quizMode && (
             <>
-              <div className="ctrl-group" style={{ marginLeft: '12px' }}>
+              <span className="ctrl-sep" />
+              <div className="ctrl-group">
                 <label>Speed <span className="mono">{speed}%</span></label>
                 <input type="range" min={1} max={100} value={speed}
                   onChange={e => setSpeed(+e.target.value)} />
@@ -370,11 +717,18 @@ export default function TreeVisualizer() {
                   </svg>
                 </button>
               </div>
+              <span className="ctrl-sep" />
               <button
                 className={`btn btn-ghost btn-sm code-toggle ${showCode ? 'active' : ''}`}
                 onClick={() => setShowCode(v => !v)}
               >
                 {showCode ? 'Hide Code' : 'Show Code'}
+              </button>
+              <button
+                className={`btn btn-ghost btn-sm code-toggle ${showDesc ? 'active' : ''}`}
+                onClick={() => setShowDesc(v => !v)}
+              >
+                {showDesc ? 'Hide Info' : 'Show Info'}
               </button>
             </>
           )}
@@ -404,9 +758,20 @@ export default function TreeVisualizer() {
           : <div className="traversal-desc">
               <span className={`badge ${info.badge}`}>{info.label}</span>
               <span className="desc-text">{info.desc}</span>
+              {traversal === 'bstSearch' && <span className="desc-text" style={{ color: 'var(--neon-yellow)' }}> - Click any node to set as target, then press Play!</span>}
+              {traversal === 'bstInsert' && <span className="desc-text" style={{ color: 'var(--neon-green)' }}> - Type a number in the input box and press Play!</span>}
             </div>
         }
       </div>
+
+      {showDesc && !quizMode && (
+        <div className="card fade-in-up" style={{ marginBottom: '20px', background: 'var(--bg-secondary)', borderLeft: `4px solid var(--neon-${info.badge.split('-')[1] || 'blue'})`, padding: '16px 20px' }}>
+          <h3 style={{ margin: '0 0 8px 0', fontSize: '1.1rem', color: 'var(--text-primary)' }}>{info.label}</h3>
+          <p style={{ margin: 0, color: 'var(--text-muted)', lineHeight: '1.5', fontSize: '0.95rem' }}>
+            {info.explanation}
+          </p>
+        </div>
+      )}
 
       <div className="tree-main">
         <div className={`tree-canvas card ${quizMode ? 'quiz-active' : ''}`} style={{ position: 'relative' }}>
@@ -439,19 +804,21 @@ export default function TreeVisualizer() {
             style={{ cursor: quizMode && !quizDone ? 'pointer' : 'default' }}>
             {treeNodes.map(node => {
               const pos = positions[node.id];
-              if (!pos) return null;
+              const hideNodes = currentFrame?.hideNodes ?? [];
+              if (!pos || hideNodes.includes(node.id)) return null;
+              
               const quizEdgeLeft  = quizMode && quizClicks.includes(node.id) && node.left  && quizClicks.includes(node.left);
               const quizEdgeRight = quizMode && quizClicks.includes(node.id) && node.right && quizClicks.includes(node.right);
               return (
                 <g key={`edges-${node.id}`}>
-                  {node.left && positions[node.left] && (
+                  {node.left && positions[node.left] && !hideNodes.includes(node.left) && (
                     <line
                       x1={pos.x} y1={pos.y}
                       x2={positions[node.left].x} y2={positions[node.left].y}
                       className={`tree-edge ${quizMode ? (quizEdgeLeft ? 'visited' : '') : (order.includes(node.left) ? 'visited' : '')}`}
                     />
                   )}
-                  {node.right && positions[node.right] && (
+                  {node.right && positions[node.right] && !hideNodes.includes(node.right) && (
                     <line
                       x1={pos.x} y1={pos.y}
                       x2={positions[node.right].x} y2={positions[node.right].y}
@@ -463,16 +830,34 @@ export default function TreeVisualizer() {
             })}
             {treeNodes.map(node => {
               const pos = positions[node.id];
-              if (!pos) return null;
+              const hideNodes = currentFrame?.hideNodes ?? [];
+              if (!pos || hideNodes.includes(node.id)) return null;
+              
               const cls = getNodeClass(node.id);
-              const clickable = quizMode && !quizDone && !quizClicks.includes(node.id);
+              const isSearchTarget = traversal === 'bstSearch' && node.value === searchTarget;
+              const finalCls = isSearchTarget ? `${cls} search-target` : cls;
+              
+              const quizClickable = quizMode && !quizDone && !quizClicks.includes(node.id);
+              const searchClickable = traversal === 'bstSearch' && !playing;
+              const clickable = quizClickable || searchClickable;
+              
               const stepNum = quizClicks.indexOf(node.id);
+              
+              const onNodeClick = () => {
+                if (quizClickable) handleQuizClick(node.id);
+                else if (searchClickable) {
+                  setSearchTarget(node.value);
+                  reset();
+                  showToast(`Target set to ${node.value}. Press Play!`);
+                }
+              };
+
               return (
                 <g
                   key={node.id}
-                  className={cls}
+                  className={finalCls}
                   transform={`translate(${pos.x},${pos.y})`}
-                  onClick={clickable ? () => handleQuizClick(node.id) : undefined}
+                  onClick={clickable ? onNodeClick : undefined}
                   style={clickable ? { cursor: 'pointer' } : {}}
                 >
                   <circle r={R} />
@@ -490,9 +875,11 @@ export default function TreeVisualizer() {
 
         {!quizMode && (
           <div className="tree-log card">
-            <h3>Traversal Order</h3>
+            <h3>{traversal.startsWith('bst') ? 'BST Log' : 'Traversal Order'}</h3>
             <div className="order-list">
-              {order.length === 0
+              {currentFrame?.notFound && <div className="order-item"><span className="order-val" style={{color:'var(--neon-red)'}}>Not Found!</span></div>}
+              {currentFrame?.error && <div className="order-item"><span className="order-val" style={{color:'var(--neon-red)'}}>{currentFrame.error}</span></div>}
+              {order.length === 0 && !currentFrame?.notFound && !currentFrame?.error
                 ? <span className="empty-log">No nodes visited yet</span>
                 : order.map((id, i) => (
                   <div key={i} className={`order-item ${id === highlighted ? 'current' : ''}`}>
@@ -525,12 +912,21 @@ export default function TreeVisualizer() {
       {showCode && (
         <div className="tree-code-panel card">
           <div className="code-panel-header">
-            <span className="code-panel-title">{info.label} Traversal</span>
-            <span className={`badge ${info.badge}`}>{info.desc}</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <span className="code-panel-title">{info.label} Traversal</span>
+              <span className={`badge ${info.badge}`}>{info.desc}</span>
+            </div>
+            <div className="code-lang-tabs">
+              {['javascript', 'python', 'java', 'cpp'].map(l => (
+                <button key={l} className={`lang-tab ${codeLang === l ? 'active' : ''}`} onClick={() => setCodeLang(l)}>
+                  {l === 'javascript' ? 'JS' : l === 'python' ? 'Python' : l === 'java' ? 'Java' : 'C++'}
+                </button>
+              ))}
+            </div>
           </div>
           <pre
             className="code-block"
-            dangerouslySetInnerHTML={{ __html: highlight(CODE_SNIPPETS[traversal]) }}
+            dangerouslySetInnerHTML={{ __html: highlight(CODE_SNIPPETS[traversal][codeLang] || CODE_SNIPPETS[traversal].javascript) }}
           />
         </div>
       )}

@@ -45,6 +45,12 @@
   transition: fill 0.3s ease;
 }
 
+.tree-node.search-target circle {
+  stroke: var(--neon-yellow);
+  fill: rgba(251, 191, 36, 0.1);
+  stroke-dasharray: 4;
+}
+
 .tree-node.visited circle {
   fill: rgba(0, 212, 255, 0.12);
   stroke: var(--neon-blue);
@@ -142,6 +148,34 @@
 .tok-comment { color: #5c6370; font-style: italic; }
 .tok-num     { color: #d19a66; }
 .tok-str     { color: #98c379; }
+
+.code-lang-tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.lang-tab {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.lang-tab:hover {
+  background: rgba(255,255,255,0.05);
+  color: var(--text-primary);
+}
+
+.lang-tab.active {
+  background: rgba(0, 212, 255, 0.1);
+  border-color: rgba(0, 212, 255, 0.3);
+  color: var(--neon-blue);
+}
 
 .tree-node.correct circle {
   fill: rgba(52,211,153,0.2);

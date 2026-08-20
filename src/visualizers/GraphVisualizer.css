@@ -295,6 +295,34 @@
 .tok-num     { color: #d19a66; }
 .tok-str     { color: #98c379; }
 
+.code-lang-tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.lang-tab {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.lang-tab:hover {
+  background: rgba(255,255,255,0.05);
+  color: var(--text-primary);
+}
+
+.lang-tab.active {
+  background: rgba(0, 212, 255, 0.1);
+  border-color: rgba(0, 212, 255, 0.3);
+  color: var(--neon-blue);
+}
+
 /* Dijkstra Additions */
 .edge-weight {
   font-family: var(--font-mono);
@@ -335,4 +363,9 @@
   color: var(--neon-blue);
   font-weight: 600;
   border-left: 2px solid var(--neon-blue);
+}
+
+.graph-edge.wrong-edge {
+  stroke: var(--neon-red) !important;
+  stroke-width: 4px;
 }
