@@ -708,7 +708,7 @@ export default function LinkedListVisualizer() {
               const isDeleted = node.deleted;
               return (
                 <g key={node.id} className="ll-node-group" transform={`translate(${x}, ${y})`} onMouseDown={(e) => handleNodeMouseDown(e, node.id)} onDoubleClick={(e) => handleNodeDoubleClick(e, node.id)} style={{ cursor: 'pointer', opacity: isDeleted ? 0 : 1, transition: 'transform 0.5s ease, opacity 0.5s ease' }}>
-                  <rect x={-nodeW/2} y={-nodeH/2} width={nodeW} height={nodeH} rx={8} className="ll-node-rect" style={{ stroke: isSelected ? 'var(--neon-purple)' : '' }} />
+                  <rect x={-nodeW/2} y={-nodeH/2} width={nodeW} height={nodeH} rx={8} className="ll-node-rect" style={isSelected ? { stroke: 'var(--neon-purple)' } : {}} />
                   <text className="ll-node-text">{node.val}</text>
                 </g>
               );
@@ -720,7 +720,7 @@ export default function LinkedListVisualizer() {
               const isSelected = selectedNodeId === node.id;
               return (
                 <g key={node.id} className="ll-node-group" transform={`translate(${x}, ${y})`} onMouseDown={(e) => handleNodeMouseDown(e, node.id)} onDoubleClick={(e) => handleNodeDoubleClick(e, node.id)} style={{ cursor: 'grab' }}>
-                  <rect x={-nodeW/2} y={-nodeH/2} width={nodeW} height={nodeH} rx={8} className="ll-node-rect" style={{ stroke: isSelected ? 'var(--neon-purple)' : 'var(--neon-green)' }} />
+                  <rect x={-nodeW/2} y={-nodeH/2} width={nodeW} height={nodeH} rx={8} className="ll-node-rect" style={isSelected ? { stroke: 'var(--neon-purple)' } : { stroke: 'var(--neon-green)' }} />
                   <text className="ll-node-text">{node.val}</text>
                 </g>
               );
