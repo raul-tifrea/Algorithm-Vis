@@ -36,7 +36,7 @@ export function primTraversal(graph, startId) {
     frames.push({
       visited: new Set(mstSet),
       current: u,
-      distances: Object.assign({}, key), // Maps to distances panel in UI
+      distances: Object.assign({}, key),
       previous: Object.assign({}, parent),
       frontier: Object.assign({}, frontier),
       mstEdges: [...mstEdges],

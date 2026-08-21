@@ -472,7 +472,7 @@ function computeTraversalAnswer(traversalKey, nodes, rootId) {
 
 export default function TreeVisualizer() {
   const [traversal, setTraversal] = useState('inorder');
-  const [codeLang, setCodeLang] = useState('javascript');
+  const [codeLang, setCodeLang] = useState('cpp');
   const [speed, setSpeed] = useState(50);
   const [frames, setFrames] = useState([]);
   const [frameIdx, setFrameIdx] = useState(-1);
@@ -702,25 +702,27 @@ export default function TreeVisualizer() {
     <div className="tree-vis fade-in-up">
       <div className="tree-controls card">
         <div className="ctrl-row">
-          {Object.entries(TRAVERSALS).map(([key, v]) => (
-            <button
-              key={key}
-              className={`btn btn-sm ${traversal === key ? 'btn-primary' : 'btn-ghost'}`}
-              onClick={() => { 
-                if (key.startsWith('bst') && !isBST(treeNodes, rootId)) {
-                  const { nodes, rootId: newRoot } = generateRandomBST();
-                  setTreeNodes(nodes);
-                  setRootId(newRoot);
-                }
-                setTraversal(key); 
-                reset(); 
-                exitQuiz(); 
-              }}
-              disabled={playing}
-            >
-              {v.label}
-            </button>
-          ))}
+          <div className="segmented-control" style={{ overflowX: 'auto' }}>
+            {Object.entries(TRAVERSALS).map(([key, v]) => (
+              <button
+                key={key}
+                className={`segment-btn ${traversal === key ? 'active' : ''}`}
+                onClick={() => { 
+                  if (key.startsWith('bst') && !isBST(treeNodes, rootId)) {
+                    const { nodes, rootId: newRoot } = generateRandomBST();
+                    setTreeNodes(nodes);
+                    setRootId(newRoot);
+                  }
+                  setTraversal(key); 
+                  reset(); 
+                  exitQuiz(); 
+                }}
+                disabled={playing}
+              >
+                {v.label}
+              </button>
+            ))}
+          </div>
           {!quizMode
             ? <button className="btn btn-sm btn-ghost" onClick={() => startQuiz()} disabled={playing} style={{ marginLeft: '8px' }}>
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -1000,7 +1002,7 @@ export default function TreeVisualizer() {
               <span className={`badge ${info.badge}`}>{info.desc}</span>
             </div>
             <div className="code-lang-tabs">
-              {['javascript', 'python', 'java', 'cpp'].map(l => (
+              {['cpp', 'javascript', 'python', 'java'].map(l => (
                 <button key={l} className={`lang-tab ${codeLang === l ? 'active' : ''}`} onClick={() => setCodeLang(l)}>
                   {l === 'javascript' ? 'JS' : l === 'python' ? 'Python' : l === 'java' ? 'Java' : 'C++'}
                 </button>

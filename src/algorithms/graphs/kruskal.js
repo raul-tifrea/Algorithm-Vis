@@ -3,7 +3,6 @@ export function kruskalTraversal(graph, startId) {
   var mstEdges = [];
   var visited = new Set();
   
-  // Extract all unique edges
   var allEdges = [];
   var edgeSet = new Set();
   for (var u in graph) {
@@ -20,7 +19,6 @@ export function kruskalTraversal(graph, startId) {
   
   allEdges.sort((a, b) => a.weight - b.weight);
 
-  // Union Find
   var parent = {};
   for (var node in graph) parent[node] = node;
   
@@ -59,7 +57,7 @@ export function kruskalTraversal(graph, startId) {
       
       frames.push({
         visited: new Set(visited),
-        current: v, // Highlights one of the newly connected nodes
+        current: v,
         mstEdges: [...mstEdges],
         path: Array.from(visited),
       });

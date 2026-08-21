@@ -11,9 +11,8 @@
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--accent-light);
+  color: var(--accent);
   background: var(--accent-dim);
-  border: 1px solid rgba(99,102,241,0.2);
   border-radius: 100px;
   padding: 4px 12px;
   margin-bottom: 16px;
@@ -21,89 +20,80 @@
 
 .hero h1 { margin-bottom: 14px; }
 .hero-sub {
-  font-size: 1rem;
+  font-size: 1.05rem;
   color: var(--text-muted);
   max-width: 480px;
   margin: 0 auto 26px;
-  line-height: 1.7;
+  line-height: 1.5;
 }
-.hero-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
 
-.bento {
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  grid-template-rows: auto auto;
-  gap: 12px;
-  max-width: 900px;
+/* iOS Grouped List Style */
+.ios-list-group {
+  max-width: 680px;
   margin: 0 auto;
-  width: 100%;
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
 }
 
-.cat-card:nth-child(1) { grid-column: 1 / 5; }
-.cat-card:nth-child(2) { grid-column: 5 / 9; }
-.cat-card:nth-child(3) { grid-column: 9 / 13; }
+.ios-list-item {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  background: transparent;
+  transition: background var(--transition);
+  border-bottom: 1px solid var(--border);
+}
 
-.bento-card {
+.ios-list-item:last-child {
+  border-bottom: none;
+}
+
+.ios-list-item:hover, .ios-list-item:active {
+  background: var(--bg-card-hover);
+}
+
+.ios-icon-box {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  flex-shrink: 0;
+  margin-right: 16px;
+}
+
+.ios-icon-box.color-blue   { background: var(--neon-blue); }
+.ios-icon-box.color-purple { background: var(--neon-purple); }
+.ios-icon-box.color-green  { background: var(--neon-green); }
+
+.ios-list-content {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
-}
-.bento-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 28px rgba(0,0,0,0.28);
+  gap: 2px;
 }
 
-.cat-card {
-  gap: 12px;
-  padding: 20px;
-  aspect-ratio: 1 / 1.05;
+.ios-list-title {
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
 }
 
-.color-blue:hover   { border-color: rgba(96,165,250,0.4); }
-.color-purple:hover { border-color: rgba(167,139,250,0.4); }
-.color-green:hover  { border-color: rgba(52,211,153,0.4); }
-
-.cat-header { display: flex; align-items: center; gap: 10px; }
-
-.cat-icon {
-  width: 36px; height: 36px;
-  border-radius: var(--radius-sm);
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-}
-.color-blue   .cat-icon { background: rgba(96,165,250,0.1);  color: var(--neon-blue);   border: 1px solid rgba(96,165,250,0.15); }
-.color-purple .cat-icon { background: rgba(167,139,250,0.1); color: var(--neon-purple); border: 1px solid rgba(167,139,250,0.15); }
-.color-green  .cat-icon { background: rgba(52,211,153,0.1);  color: var(--neon-green);  border: 1px solid rgba(52,211,153,0.15); }
-
-.cat-title { font-size: 1rem; font-weight: 700; color: var(--text-primary); }
-.cat-desc  { font-size: 0.83rem; flex: 1; line-height: 1.65; }
-
-.cat-algos { display: flex; flex-wrap: wrap; gap: 4px; }
-.cat-algo-tag {
-  font-size: 0.68rem;
-  padding: 2px 6px;
-  border-radius: 4px;
-  background: var(--bg-secondary);
+.ios-list-subtitle {
+  font-size: 0.85rem;
   color: var(--text-muted);
-  font-family: var(--font-mono);
-  border: 1px solid var(--border);
+  line-height: 1.3;
 }
 
-.cat-cta {
-  font-size: 0.8rem;
-  font-weight: 600;
+.ios-list-chevron {
   color: var(--text-dim);
-  transition: color var(--transition);
-  margin-top: auto;
-}
-.bento-card:hover .cat-cta { color: var(--accent-light); }
-
-@media (max-width: 760px) {
-  .bento {
-    grid-template-columns: 1fr;
-    max-width: 100%;
-  }
-  .cat-card:nth-child(1),
-  .cat-card:nth-child(2),
-  .cat-card:nth-child(3) { grid-column: span 1; aspect-ratio: unset; }
+  margin-left: 12px;
+  display: flex;
+  align-items: center;
 }

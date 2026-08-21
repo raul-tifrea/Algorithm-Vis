@@ -5,6 +5,7 @@ import Home    from './pages/Home';
 import Sorting from './pages/Sorting';
 import Trees   from './pages/Trees';
 import Graphs  from './pages/Graphs';
+import Pathfinding from './pages/Pathfinding';
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
             <Route path="/sorting" element={<Sorting />} />
             <Route path="/trees"   element={<Trees />}   />
             <Route path="/graphs"  element={<Graphs />}  />
+            <Route path="/pathfinding" element={<Pathfinding />} />
           </Routes>
         </main>
       </div>

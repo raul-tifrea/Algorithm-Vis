@@ -401,7 +401,7 @@ function highlight(code) {
 
 export default function SortVisualizer() {
   const [algo, setAlgo] = useState('bubble');
-  const [codeLang, setCodeLang] = useState('javascript');
+  const [codeLang, setCodeLang] = useState('cpp');
   const [size, setSize] = useState(30);
   const [speed, setSpeed] = useState(50);
   const [array, setArray] = useState(() => randomArray(30));
@@ -492,13 +492,17 @@ export default function SortVisualizer() {
     <div className="sort-vis fade-in-up">
       <div className="sort-controls card">
         <div className="ctrl-row">
-          <div className="ctrl-group">
-            <label>Algorithm</label>
-            <select value={algo} onChange={e => { setAlgo(e.target.value); reset(); }} disabled={playing}>
-              {Object.entries(ALGORITHMS).map(([key, v]) => (
-                <option key={key} value={key}>{v.label}</option>
-              ))}
-            </select>
+          <div className="segmented-control" style={{ overflowX: 'auto' }}>
+            {Object.entries(ALGORITHMS).map(([key, v]) => (
+              <button
+                key={key}
+                className={`segment-btn ${algo === key ? 'active' : ''}`}
+                onClick={() => { setAlgo(key); reset(); }}
+                disabled={playing}
+              >
+                {v.label}
+              </button>
+            ))}
           </div>
           <div className="ctrl-group" style={{ marginLeft: '12px' }}>
             <label>Array Size <span className="mono">{size}</span></label>
@@ -587,7 +591,7 @@ export default function SortVisualizer() {
                 <span className="badge badge-blue mono">{algoInfo.time}</span>
               </div>
               <div className="code-lang-tabs">
-                {['javascript', 'python', 'java', 'cpp'].map(l => (
+                {['cpp', 'javascript', 'python', 'java'].map(l => (
                   <button key={l} className={`lang-tab ${codeLang === l ? 'active' : ''}`} onClick={() => setCodeLang(l)}>
                     {l === 'javascript' ? 'JS' : l === 'python' ? 'Python' : l === 'java' ? 'Java' : 'C++'}
                   </button>

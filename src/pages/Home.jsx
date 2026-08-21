@@ -21,6 +21,15 @@ const CategoryIcons = {
       <line x1="7" y1="12" x2="17" y2="6" /><line x1="7" y1="12" x2="17" y2="18" />
     </svg>
   ),
+  pathfinding: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+      <line x1="9" y1="3" x2="9" y2="21" />
+      <line x1="15" y1="3" x2="15" y2="21" />
+      <line x1="3" y1="9" x2="21" y2="9" />
+      <line x1="3" y1="15" x2="21" y2="15" />
+    </svg>
+  ),
 };
 
 
@@ -49,6 +58,14 @@ const CATEGORIES = [
     algorithms: ['BFS', 'DFS', 'Dijkstra', 'Bellman-Ford', 'Prim', 'Kruskal'],
     desc: 'Explore graph traversal with algorithms — watch the frontier and visited nodes update live.',
   },
+  {
+    to: '/pathfinding',
+    icon: CategoryIcons.pathfinding,
+    title: 'Pathfinding',
+    color: 'blue',
+    algorithms: ['A*', 'Dijkstra'],
+    desc: 'Draw walls on a 2D grid and watch A* magically find the shortest path.',
+  },
 ];
 
 
@@ -65,24 +82,23 @@ export default function Home() {
         </p>
       </section>
 
-      <section className="bento">
-
+      <section className="ios-list-group">
         {CATEGORIES.map(cat => (
-          <Link key={cat.to} to={cat.to} className={`bento-card cat-card card color-${cat.color}`}>
-            <div className="cat-header">
-              <span className="cat-icon">{cat.icon}</span>
-              <span className="cat-title">{cat.title}</span>
+          <Link key={cat.to} to={cat.to} className="ios-list-item">
+            <div className={`ios-icon-box color-${cat.color}`}>
+              {cat.icon}
             </div>
-            <p className="cat-desc">{cat.desc}</p>
-            <div className="cat-algos">
-              {cat.algorithms.map(a => (
-                <span key={a} className="cat-algo-tag">{a}</span>
-              ))}
+            <div className="ios-list-content">
+              <span className="ios-list-title">{cat.title}</span>
+              <span className="ios-list-subtitle">{cat.desc}</span>
             </div>
-            <span className="cat-cta">Open &rarr;</span>
+            <div className="ios-list-chevron">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </div>
           </Link>
         ))}
-
       </section>
     </div>
   );

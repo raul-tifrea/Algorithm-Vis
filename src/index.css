@@ -108,7 +108,7 @@ code, .mono { font-family: var(--font-mono); }
   padding: 20px;
   transition: border-color var(--transition);
 }
-.card:hover { border-color: #3a3a56; }
+.card:hover { border-color: var(--border-focus); }
 
 .btn {
   display: inline-flex;
@@ -143,11 +143,58 @@ code, .mono { font-family: var(--font-mono); }
 }
 .btn-ghost:hover:not(:disabled) {
   color: var(--text-primary);
-  border-color: #4a4a64;
-  background: rgba(255,255,255,0.04);
+  border-color: var(--border-focus);
+  background: var(--bg-card-hover);
 }
 
 .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
+
+/* iOS Segmented Control */
+.segmented-control {
+  display: flex;
+  background: var(--bg-primary);
+  padding: 4px;
+  border-radius: 10px;
+  gap: 4px;
+  overflow-x: auto;
+  flex-wrap: nowrap;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Hide scrollbar for segmented control but allow scrolling */
+.segmented-control::-webkit-scrollbar {
+  display: none;
+}
+.segmented-control {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.segment-btn {
+  flex: 1;
+  text-align: center;
+  border-radius: 6px;
+  background: transparent;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+
+.segment-btn:hover {
+  color: var(--text-primary);
+}
+
+.segment-btn.active {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+  font-weight: 600;
+}
 
 .btn-icon {
   padding: 0;

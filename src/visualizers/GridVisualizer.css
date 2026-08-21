@@ -1,0 +1,106 @@
+.grid-vis { display: flex; flex-direction: column; gap: 20px; }
+.grid-controls { display: flex; flex-direction: column; gap: 12px; }
+
+.grid-canvas {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px;
+  overflow-x: auto;
+}
+
+.grid-board {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  background: var(--bg-primary);
+}
+
+.grid-row {
+  display: flex;
+}
+
+.grid-cell {
+  width: 25px;
+  height: 25px;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background-color: var(--bg-secondary);
+  user-select: none;
+}
+
+.grid-row:last-child .grid-cell { border-bottom: none; }
+.grid-cell:last-child { border-right: none; }
+
+.grid-cell.wall {
+  background-color: var(--text-muted);
+  border-color: var(--text-muted);
+  animation: popAnim 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.grid-cell.start {
+  background-color: var(--neon-green);
+  border-color: var(--neon-green);
+  border-radius: 4px;
+  transform: scale(0.9);
+  z-index: 10;
+}
+
+.grid-cell.end {
+  background-color: var(--neon-red);
+  border-color: var(--neon-red);
+  border-radius: 4px;
+  transform: scale(0.9);
+  z-index: 10;
+}
+
+.grid-cell.visited {
+  background-color: rgba(0, 122, 255, 0.2);
+  border-color: rgba(0, 122, 255, 0.3);
+  animation: visitedAnim 1.5s ease-out forwards;
+}
+
+.grid-cell.frontier {
+  background-color: rgba(255, 204, 0, 0.4);
+  border-color: rgba(255, 204, 0, 0.6);
+  animation: popAnim 0.3s ease-out forwards;
+}
+
+.grid-cell.path {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  animation: popAnim 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.grid-cell.current {
+  background-color: var(--accent-light);
+  border-color: var(--accent-light);
+}
+
+@keyframes popAnim {
+  0% { transform: scale(0.3); border-radius: 100%; }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+@keyframes visitedAnim {
+  0% { transform: scale(0.3); background-color: rgba(0, 212, 255, 0.8); border-radius: 100%; }
+  50% { background-color: rgba(0, 122, 255, 0.4); }
+  100% { transform: scale(1); background-color: rgba(0, 122, 255, 0.2); }
+}
+
+.grid-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.grid-body.with-code {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.grid-desc {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}

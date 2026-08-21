@@ -28,6 +28,15 @@ const Icons = {
       <line x1="7" y1="12" x2="17" y2="6" /><line x1="7" y1="12" x2="17" y2="18" />
     </svg>
   ),
+  pathfinding: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+      <line x1="9" y1="3" x2="9" y2="21" />
+      <line x1="15" y1="3" x2="15" y2="21" />
+      <line x1="3" y1="9" x2="21" y2="9" />
+      <line x1="3" y1="15" x2="21" y2="15" />
+    </svg>
+  ),
   sun: (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="12" r="5"></circle>
@@ -53,13 +62,13 @@ const NAV_ITEMS = [
   { to: '/sorting', label: 'Sorting', icon: Icons.sorting },
   { to: '/trees', label: 'Trees', icon: Icons.trees },
   { to: '/graphs', label: 'Graphs', icon: Icons.graphs },
+  { to: '/pathfinding', label: 'Pathfinding', icon: Icons.pathfinding },
 ];
 
 export default function Sidebar() {
   const [theme, setTheme] = useState('dark');
 
   useEffect(() => {
-    // Check local storage or system preference
     const savedTheme = localStorage.getItem('app-theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 

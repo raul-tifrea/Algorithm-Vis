@@ -742,7 +742,7 @@ function highlight(code) {
 
 export default function GraphVisualizer() {
   const [algo, setAlgo] = useState('bfs');
-  const [codeLang, setCodeLang] = useState('javascript');
+  const [codeLang, setCodeLang] = useState('cpp');
   const [speed, setSpeed] = useState(50);
   const [frames, setFrames] = useState([]);
   const [frameIdx, setFrameIdx] = useState(-1);
@@ -995,16 +995,18 @@ export default function GraphVisualizer() {
     <div className="graph-vis fade-in-up">
       <div className="graph-controls card">
         <div className="ctrl-row">
-          {Object.entries(ALGORITHMS).map(([key, v]) => (
-            <button
-              key={key}
-              className={`btn btn-sm ${algo === key ? 'btn-primary' : 'btn-ghost'}`}
-              onClick={() => { setAlgo(key); reset(); exitQuiz(); }}
-              disabled={playing}
-            >
-              {v.label}
-            </button>
-          ))}
+          <div className="segmented-control" style={{ overflowX: 'auto' }}>
+            {Object.entries(ALGORITHMS).map(([key, v]) => (
+              <button
+                key={key}
+                className={`segment-btn ${algo === key ? 'active' : ''}`}
+                onClick={() => { setAlgo(key); reset(); exitQuiz(); }}
+                disabled={playing}
+              >
+                {v.label}
+              </button>
+            ))}
+          </div>
           {!quizMode
             ? <button className="btn btn-sm btn-ghost quiz-btn" onClick={startQuiz} disabled={playing || algo === 'bellmanFord'} style={{ marginLeft: '8px' }} title={algo === 'bellmanFord' ? 'Quiz mode is not supported for Bellman-Ford because edge relaxation order is arbitrary' : ''}>
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -1300,7 +1302,7 @@ export default function GraphVisualizer() {
               <span className={`badge ${info.badge}`}>{info.label}</span>
             </div>
             <div className="code-lang-tabs">
-              {['javascript', 'python', 'java', 'cpp'].map(l => (
+              {['cpp', 'javascript', 'python', 'java'].map(l => (
                 <button key={l} className={`lang-tab ${codeLang === l ? 'active' : ''}`} onClick={() => setCodeLang(l)}>
                   {l === 'javascript' ? 'JS' : l === 'python' ? 'Python' : l === 'java' ? 'Java' : 'C++'}
                 </button>
@@ -1309,7 +1311,7 @@ export default function GraphVisualizer() {
           </div>
           <pre
             className="code-block"
-            dangerouslySetInnerHTML={{ __html: highlight(CODE_SNIPPETS[algo][codeLang] || CODE_SNIPPETS[algo].javascript) }}
+            dangerouslySetInnerHTML={{ __html: highlight(CODE_SNIPPETS[algo][codeLang] || CODE_SNIPPETS[algo].cpp) }}
           />
         </div>
       )}

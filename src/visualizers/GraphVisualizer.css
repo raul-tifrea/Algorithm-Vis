@@ -23,45 +23,44 @@
 
 .graph-edge {
   stroke: var(--border);
-  stroke-width: 2;
+  stroke-width: 3;
   transition: stroke 0.3s ease, stroke-width 0.3s ease;
 }
 .graph-edge.active {
-  stroke: rgba(0, 212, 255, 0.4);
-  stroke-width: 3;
+  stroke: var(--accent-dim);
+  stroke-width: 4;
 }
 
 .graph-node circle {
   fill: var(--bg-secondary);
   stroke: var(--border);
-  stroke-width: 2;
+  stroke-width: 2.5;
   transition: all 0.3s ease;
 }
 .graph-node text {
-  fill: var(--text-muted);
-  font-family: var(--font-mono);
-  font-size: 14px;
-  font-weight: 700;
+  fill: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
   transition: fill 0.3s ease;
 }
 
-.graph-node.visited circle { fill: rgba(0,212,255,0.12); stroke: var(--neon-blue); }
-.graph-node.visited text   { fill: var(--neon-blue); }
+.graph-node.visited circle { fill: var(--accent-dim); stroke: var(--accent); }
+.graph-node.visited text   { fill: var(--accent); }
 
 .graph-node.frontier circle {
-  fill: rgba(255,214,10,0.15);
+  fill: rgba(255, 204, 0, 0.15);
   stroke: var(--neon-yellow);
-  stroke-width: 2.5;
+  stroke-width: 3;
 }
 .graph-node.frontier text { fill: var(--neon-yellow); }
 
 .graph-node.current circle {
-  fill: rgba(0,212,255,0.3);
-  stroke: var(--neon-blue);
+  fill: var(--accent);
+  stroke: var(--accent);
   stroke-width: 3.5;
-  filter: drop-shadow(0 0 12px rgba(0,212,255,0.8));
 }
-.graph-node.current text { fill: #fff; }
+.graph-node.current text { fill: #ffffff; }
 
 .graph-side { display: flex; flex-direction: column; gap: 16px; }
 

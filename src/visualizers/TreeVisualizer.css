@@ -26,10 +26,10 @@
 
 .tree-edge {
   stroke: var(--border);
-  stroke-width: 2;
+  stroke-width: 3;
   transition: stroke 0.3s ease, x1 0.5s ease, y1 0.5s ease, x2 0.5s ease, y2 0.5s ease;
 }
-.tree-edge.visited { stroke: var(--neon-blue); opacity: 0.5; }
+.tree-edge.visited { stroke: var(--accent); opacity: 0.8; }
 
 .tree-node {
   transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
@@ -38,36 +38,35 @@
 .tree-node circle {
   fill: var(--bg-secondary);
   stroke: var(--border);
-  stroke-width: 2;
+  stroke-width: 2.5;
   transition: all 0.3s ease;
 }
 .tree-node text {
-  fill: var(--text-muted);
-  font-family: var(--font-mono);
-  font-size: 13px;
-  font-weight: 600;
+  fill: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
   transition: fill 0.3s ease;
 }
 
 .tree-node.search-target circle {
   stroke: var(--neon-yellow);
-  fill: rgba(251, 191, 36, 0.1);
+  fill: rgba(255, 204, 0, 0.15);
   stroke-dasharray: 4;
 }
 
 .tree-node.visited circle {
-  fill: rgba(0, 212, 255, 0.12);
-  stroke: var(--neon-blue);
+  fill: var(--accent-dim);
+  stroke: var(--accent);
 }
-.tree-node.visited text { fill: var(--neon-blue); }
+.tree-node.visited text { fill: var(--accent); font-weight: 600; }
 
 .tree-node.active circle {
-  fill: rgba(0, 212, 255, 0.25);
-  stroke: var(--neon-blue);
+  fill: var(--accent);
+  stroke: var(--accent);
   stroke-width: 3;
-  filter: drop-shadow(0 0 10px rgba(0,212,255,0.7));
 }
-.tree-node.active text { fill: #fff; }
+.tree-node.active text { fill: #ffffff; font-weight: 600; }
 
 .tree-node.fading-out circle {
   fill: rgba(255, 69, 58, 0.15);

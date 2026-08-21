@@ -56,7 +56,6 @@ export function bellmanFordTraversal(graph, startId) {
     if (!changed) break;
   }
 
-  // Final check for negative cycles
   for (var u in graph) {
     if (distances[u] === Infinity) continue;
     var neighbors = graph[u];
@@ -64,7 +63,6 @@ export function bellmanFordTraversal(graph, startId) {
       var v = neighbors[j].node;
       var weight = neighbors[j].weight;
       if (distances[u] + weight < distances[v]) {
-        // Negative cycle detected
         frames.push({
           visited: new Set(visited),
           current: u,
