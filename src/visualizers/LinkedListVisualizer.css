@@ -1,0 +1,99 @@
+.ll-vis {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.ll-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ll-canvas {
+  width: 100%;
+  height: 350px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  position: relative;
+  overflow: hidden;
+}
+
+.ll-node-rect {
+  fill: var(--bg-card);
+  stroke: var(--border);
+  stroke-width: 2;
+  transition: all 0.3s ease;
+}
+
+.ll-node-group {
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.ll-node-text {
+  fill: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 500;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.ll-pointer-line {
+  stroke: var(--text-dim);
+  stroke-width: 2;
+  fill: none;
+  transition: stroke 0.3s ease;
+}
+
+.ll-pointer-head {
+  fill: var(--text-dim);
+  transition: fill 0.3s ease;
+}
+
+/* Pointer variable labels (e.g., prev, curr, next, slow, fast) */
+.ll-label-text {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  text-anchor: middle;
+}
+
+.ll-label-bg {
+  rx: 4;
+  ry: 4;
+}
+
+/* Specific pointer colors */
+.ptr-prev .ll-label-text { fill: var(--neon-purple); }
+.ptr-prev .ll-label-bg { fill: rgba(167,139,250,0.12); stroke: rgba(167,139,250,0.2); stroke-width: 1; }
+
+.ptr-curr .ll-label-text { fill: var(--neon-green); }
+.ptr-curr .ll-label-bg { fill: rgba(52,211,153,0.12); stroke: rgba(52,211,153,0.2); stroke-width: 1; }
+
+.ptr-next .ll-label-text { fill: var(--neon-blue); }
+.ptr-next .ll-label-bg { fill: rgba(96,165,250,0.12); stroke: rgba(96,165,250,0.2); stroke-width: 1; }
+
+.ptr-slow .ll-label-text { fill: var(--neon-yellow); }
+.ptr-slow .ll-label-bg { fill: rgba(251,191,36,0.12); stroke: rgba(251,191,36,0.2); stroke-width: 1; }
+
+.ptr-fast .ll-label-text { fill: var(--neon-red); }
+.ptr-fast .ll-label-bg { fill: rgba(248,113,113,0.12); stroke: rgba(248,113,113,0.2); stroke-width: 1; }
+
+.ptr-target .ll-label-text { fill: var(--neon-red); }
+.ptr-target .ll-label-bg { fill: rgba(248,113,113,0.12); stroke: rgba(248,113,113,0.2); stroke-width: 1; }
+
+.ptr-new .ll-label-text { fill: var(--neon-yellow); }
+.ptr-new .ll-label-bg { fill: rgba(251,191,36,0.12); stroke: rgba(251,191,36,0.2); stroke-width: 1; }
+
+.ll-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.ll-body.with-code {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}

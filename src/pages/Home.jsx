@@ -30,6 +30,14 @@ const CategoryIcons = {
       <line x1="3" y1="15" x2="21" y2="15" />
     </svg>
   ),
+  linkedlists: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="9" width="6" height="6" rx="1" />
+      <rect x="16" y="9" width="6" height="6" rx="1" />
+      <line x1="8" y1="12" x2="16" y2="12" />
+      <polyline points="14 9 17 12 14 15" />
+    </svg>
+  ),
 };
 
 
@@ -64,7 +72,15 @@ const CATEGORIES = [
     title: 'Pathfinding',
     color: 'blue',
     algorithms: ['A*', 'Dijkstra'],
-    desc: 'Draw walls on a 2D grid and watch A* magically find the shortest path.',
+    desc: 'Draw walls on a 2D grid and watch A* and Disjkstra magically find the shortest path.',
+  },
+  {
+    to: '/linked-lists',
+    icon: CategoryIcons.linkedlists,
+    title: 'Linked Lists',
+    color: 'purple',
+    algorithms: ['Reverse', 'Cycle Detection'],
+    desc: 'Visualize pointer manipulation with classic Linked List algorithms.',
   },
 ];
 

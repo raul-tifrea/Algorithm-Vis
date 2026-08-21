@@ -55,6 +55,12 @@
   stroke-dasharray: 4;
 }
 
+.tree-node.selected circle {
+  stroke: var(--neon-red);
+  fill: rgba(255, 69, 58, 0.15);
+  stroke-dasharray: 4;
+}
+
 .tree-node.visited circle {
   fill: var(--accent-dim);
   stroke: var(--accent);
@@ -316,6 +322,11 @@
   max-width: 90%;
   white-space: normal;
   text-align: center;
+}
+
+.quiz-toast.toast-info {
+  border-color: rgba(251,191,36,0.35);
+  color: var(--neon-yellow);
 }
 
 .quiz-banner {
