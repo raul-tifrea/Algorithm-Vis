@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import './GridVisualizer.css';
 import { pathfindingTraversal } from '../algorithms/pathfinding/astar';
+import { dfsMaze } from '../algorithms/pathfinding/mazes';
 
-const ROWS = 20;
-const COLS = 40;
-const DEFAULT_START = { row: 9, col: 5 };
-const DEFAULT_END = { row: 9, col: 34 };
+const ROWS = 21;
+const COLS = 41;
+const DEFAULT_START = { row: 11, col: 5 };
+const DEFAULT_END = { row: 11, col: 35 };
 
 const ALGORITHMS = {
   astar: {
@@ -105,6 +106,7 @@ export default function GridVisualizer() {
   const [frames, setFrames] = useState([]);
   const [frameIdx, setFrameIdx] = useState(-1);
   const [playing, setPlaying] = useState(false);
+  const [drawingMaze, setDrawingMaze] = useState(false);
   const [done, setDone] = useState(false);
   const [speed, setSpeed] = useState(70);
   const [timerMs, setTimerMs] = useState(0);
@@ -118,6 +120,7 @@ export default function GridVisualizer() {
     setFrames([]);
     setFrameIdx(-1);
     setPlaying(false);
+    setDrawingMaze(false);
     setDone(false);
     setTimerMs(0);
   }, []);
@@ -129,9 +132,60 @@ export default function GridVisualizer() {
     setEndNode(DEFAULT_END);
   }, [resetPaths]);
 
+  const generateMaze = () => {
+    resetPaths();
+    const emptyGrid = createEmptyGrid();
+    setGrid(emptyGrid);
+    
+    setTimeout(() => {
+      let mazeFrames = dfsMaze(ROWS, COLS);
+      
+      let i = 0;
+      setDrawingMaze(true);
+      const timer = setInterval(() => {
+        if (i >= mazeFrames.length) {
+          clearInterval(timer);
+          setDrawingMaze(false);
+          
+          // Ensure start and end aren't walls
+          setGrid(prev => {
+             const finalGrid = [...prev];
+             // Deep copy rows to ensure immutability
+             const sRow = [...finalGrid[startNode.row]];
+             sRow[startNode.col] = { ...sRow[startNode.col], isWall: false };
+             finalGrid[startNode.row] = sRow;
+             
+             const eRow = [...finalGrid[endNode.row]];
+             eRow[endNode.col] = { ...eRow[endNode.col], isWall: false };
+             finalGrid[endNode.row] = eRow;
+             
+             return finalGrid;
+          });
+          return;
+        }
+        
+        setGrid(prev => {
+          const newGrid = [...prev];
+          let count = 0;
+          // Process multiple frames at once for faster animation
+          while (i < mazeFrames.length && count < 6) {
+            const frame = mazeFrames[i];
+            const newRow = [...newGrid[frame.row]];
+            newRow[frame.col] = { ...newRow[frame.col], isWall: frame.isWall };
+            newGrid[frame.row] = newRow;
+            i++;
+            count++;
+          }
+          return newGrid;
+        });
+      }, 10);
+      timerRef.current = timer;
+    }, 50);
+  };
+
   const handleMouseDown = (e, row, col) => {
     e.preventDefault();
-    if (playing) return;
+    if (playing || drawingMaze) return;
     
     if (isStart(row, col)) {
       setDragMode('move-start');
@@ -152,7 +206,7 @@ export default function GridVisualizer() {
   };
 
   const handleMouseEnter = (row, col) => {
-    if (!dragMode || playing) return;
+    if (!dragMode || playing || drawingMaze) return;
     
     if (dragMode === 'move-start') {
       if (!isEnd(row, col)) {
@@ -270,7 +324,7 @@ export default function GridVisualizer() {
                 key={key}
                 className={`segment-btn ${algo === key ? 'active' : ''}`}
                 onClick={() => { setAlgo(key); resetPaths(); }}
-                disabled={playing}
+                disabled={playing || drawingMaze}
               >
                 {v.label}
               </button>
@@ -281,20 +335,26 @@ export default function GridVisualizer() {
           
           <div className="playback-btns">
             {!playing
-              ? <button className="btn btn-primary btn-icon" onClick={play} disabled={done && frames.length > 0} title="Play">
+              ? <button className="btn btn-primary btn-icon" onClick={play} disabled={(done && frames.length > 0) || drawingMaze} title="Play">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5,3 19,12 5,21" /></svg>
               </button>
               : <button className="btn btn-ghost btn-icon" onClick={pause} title="Pause">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><rect x="6" y="4" width="4" height="16" /><rect x="14" y="4" width="4" height="16" /></svg>
               </button>
             }
-            <button className="btn btn-ghost btn-icon" onClick={resetPaths} disabled={playing} title="Restart (Clear Path)">
+            <button className="btn btn-ghost btn-icon" onClick={resetPaths} disabled={playing || drawingMaze} title="Restart (Clear Path)">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="1 4 1 10 7 10" />
                 <path d="M3.51 15a9 9 0 1 0 .49-3.51" />
               </svg>
             </button>
-            <button className="btn btn-sm btn-ghost" onClick={clearBoard} disabled={playing} style={{ marginLeft: '4px' }}>Clear Board</button>
+            <button className="btn btn-sm btn-ghost" onClick={clearBoard} disabled={playing || drawingMaze} style={{ marginLeft: '4px' }}>Clear Board</button>
+          </div>
+          
+          <span className="ctrl-sep" />
+          
+          <div style={{ display: 'flex', gap: '4px' }}>
+            <button className="btn btn-sm btn-ghost" onClick={() => generateMaze()} disabled={playing || drawingMaze}>Generate Maze</button>
           </div>
           
           <span className="ctrl-sep" />

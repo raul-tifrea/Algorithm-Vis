@@ -18,14 +18,14 @@ export function bstSearch(tree, rootId, target) {
     frames.push({ highlighted: curr, order: [...order], action: `Checking node ${node.value}` });
     
     if (node.value === target) {
-      frames.push({ highlighted: curr, order: [...order], found: true, action: 'Target found!' });
+      frames.push({ highlighted: curr, order: [...order], found: true, action: `Found target (${target}) at current node!` });
       break;
     } else if (target < node.value) {
       curr = node.left;
-      frames.push({ highlighted: curr, order: [...order], action: 'target < curr.value, going left...' });
+      frames.push({ highlighted: curr, order: [...order], action: `Target (${target}) < Current (${node.value}). Going left...` });
     } else {
       curr = node.right;
-      frames.push({ highlighted: curr, order: [...order], action: 'target > curr.value, going right...' });
+      frames.push({ highlighted: curr, order: [...order], action: `Target (${target}) > Current (${node.value}). Going right...` });
     }
   }
   
@@ -58,13 +58,13 @@ export function bstInsert(tree, rootId, target) {
     if (target < node.value) {
       curr = node.left;
       side = 'left';
-      frames.push({ highlighted: curr, order: [...order], hideNodes: [newId], action: 'target < curr.value, going left...' });
+      frames.push({ highlighted: curr, order: [...order], hideNodes: [newId], action: `New Value (${target}) < Current (${node.value}). Going left...` });
     } else if (target > node.value) {
       curr = node.right;
       side = 'right';
-      frames.push({ highlighted: curr, order: [...order], hideNodes: [newId], action: 'target > curr.value, going right...' });
+      frames.push({ highlighted: curr, order: [...order], hideNodes: [newId], action: `New Value (${target}) > Current (${node.value}). Going right...` });
     } else {
-      frames.push({ highlighted: curr, order: [...order], found: true, error: "Value already exists!", hideNodes: [newId], action: 'Value already exists, aborting insert' });
+      frames.push({ highlighted: curr, order: [...order], found: true, error: "Value already exists!", hideNodes: [newId], action: `Value ${target} already exists in BST. Aborting insert.` });
       return { frames, newTree: null };
     }
     depth++;
