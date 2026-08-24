@@ -344,6 +344,32 @@ export default function LinkedListVisualizer() {
   }, []);
 
   const triggerAlgorithm = useCallback((algoName, args) => {
+    const [nodes, headId] = args;
+    if (algoName !== 'cycle' && headId) {
+      let slow = headId;
+      let fast = headId;
+      let hasCycle = false;
+      while (fast !== null) {
+        const fastNode = nodes.find(n => n.id === fast);
+        if (!fastNode || !fastNode.nextId) break;
+        const fastNextNode = nodes.find(n => n.id === fastNode.nextId);
+        if (!fastNextNode || !fastNextNode.nextId) break;
+        
+        fast = fastNextNode.nextId;
+        const slowNode = nodes.find(n => n.id === slow);
+        slow = slowNode.nextId;
+        
+        if (slow === fast && slow !== null) {
+          hasCycle = true;
+          break;
+        }
+      }
+      if (hasCycle) {
+        alert("Please break the cycle in your linked list before running this algorithm.");
+        return false;
+      }
+    }
+
     resetState();
     setAlgo(algoName);
     const { frames: f, newHeadId } = ALGORITHMS[algoName].fn(...args);
@@ -354,6 +380,7 @@ export default function LinkedListVisualizer() {
       headId: newHeadId
     });
     setPlaying(true);
+    return true;
   }, [resetState]);
 
   // When playback finishes naturally
@@ -371,30 +398,6 @@ export default function LinkedListVisualizer() {
       setFrameIdx(0);
       setDone(false);
     } else if (frames.length === 0) {
-      if (algo !== 'cycle') {
-        let slow = globalHeadId;
-        let fast = globalHeadId;
-        let hasCycle = false;
-        while (fast !== null) {
-          const fastNode = globalNodes.find(n => n.id === fast);
-          if (!fastNode || !fastNode.nextId) break;
-          const fastNextNode = globalNodes.find(n => n.id === fastNode.nextId);
-          if (!fastNextNode || !fastNextNode.nextId) break;
-          
-          fast = fastNextNode.nextId;
-          const slowNode = globalNodes.find(n => n.id === slow);
-          slow = slowNode.nextId;
-          
-          if (slow === fast && slow !== null) {
-            hasCycle = true;
-            break;
-          }
-        }
-        if (hasCycle) {
-          alert("Please break the cycle in your linked list before running this algorithm.");
-          return;
-        }
-      }
       triggerAlgorithm(algo, [globalNodes, globalHeadId]);
     } else {
       setPlaying(true);
@@ -430,7 +433,9 @@ export default function LinkedListVisualizer() {
     const newId = `n${nextIdCounter}`;
     setNextIdCounter(c => c + 1);
     const val = Math.floor(Math.random() * 99) + 1;
-    setUnlinkedNodes(prev => [...prev, { id: newId, val, nextId: null, x: 50 + (unlinkedNodes.length * 70), y: 50 }]);
+    const canvasWidth = svgRef.current ? svgRef.current.clientWidth : 800;
+    const spawnX = canvasWidth - 80;
+    setUnlinkedNodes(prev => [...prev, { id: newId, val, nextId: null, x: spawnX - (unlinkedNodes.length * 70), y: 50 }]);
   };
 
   const handleDeleteSelected = () => {
@@ -533,17 +538,18 @@ export default function LinkedListVisualizer() {
                 targetId = rightNode.id;
             }
 
-            setUnlinkedNodes(prev => prev.filter(n => n.id !== draggingNodeId));
             const nodeToAdd = { ...droppedNode };
             delete nodeToAdd.x;
             delete nodeToAdd.y;
             
             const newGlobal = [...globalNodes];
             newGlobal.splice(insertIdx, 0, nodeToAdd);
-            setGlobalNodes(newGlobal);
             
-            setAlgo('insert');
-            triggerAlgorithm('insert', [newGlobal, globalHeadId, draggingNodeId, targetId]);
+            if (triggerAlgorithm('insert', [newGlobal, globalHeadId, draggingNodeId, targetId])) {
+                setUnlinkedNodes(prev => prev.filter(n => n.id !== draggingNodeId));
+                setGlobalNodes(newGlobal);
+                setAlgo('insert');
+            }
         }
     } else {
         // Dragging a global node to create/break connections
