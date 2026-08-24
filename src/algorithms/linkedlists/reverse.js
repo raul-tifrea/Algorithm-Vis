@@ -1,7 +1,6 @@
 export function reverseLinkedList(nodesArray, headId) {
   const frames = [];
-  
-  // Deep clone to not mutate original array during playback
+
   let nodes = JSON.parse(JSON.stringify(nodesArray));
   let prevId = null;
   let currId = headId;
@@ -27,16 +26,13 @@ export function reverseLinkedList(nodesArray, headId) {
     }
 
     const currNode = nodes.find(n => n.id === currId);
-    
-    // next = curr.next
+
     nextId = currNode.nextId;
     pushFrame('next = curr.next');
-    
-    // curr.next = prev
+
     currNode.nextId = prevId;
     pushFrame('curr.next = prev');
-    
-    // Advance pointers together for smoother animation
+
     prevId = currId;
     currId = nextId;
     pushFrame('prev = curr, curr = next');

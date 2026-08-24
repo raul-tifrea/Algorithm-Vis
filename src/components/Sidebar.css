@@ -7,8 +7,7 @@
   padding: 24px 16px;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  /* Make it slightly translucent for that iPadOS look */
-  background: var(--material-bg);
+    background: var(--material-bg);
   z-index: 100;
   transition: background var(--transition), border-color var(--transition);
 }
@@ -23,12 +22,12 @@
 
 .brand-icon {
   background: linear-gradient(135deg, var(--accent-light), var(--accent));
-  color: #fff;
+  color: var(--accent-fg);
   font-weight: 700;
   font-size: 0.9rem;
   padding: 6px 8px;
   border-radius: var(--radius-md);
-  box-shadow: 0 4px 12px rgba(10, 132, 255, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .brand-name {
@@ -72,12 +71,11 @@
 
 .sidebar-link.active {
   background: var(--accent);
-  color: #ffffff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
+  color: var(--accent-fg);
+  box-shadow: none; }
 
 .sidebar-link.active .sidebar-icon {
-  color: #ffffff;
+  color: var(--accent-fg);
 }
 
 .sidebar-footer {

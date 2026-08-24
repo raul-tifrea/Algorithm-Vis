@@ -1,8 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 :root {
-  /* Common / Base Variables */
-  --font-body: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-body: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --font-mono: 'JetBrains Mono', SFMono-Regular, Consolas, monospace;
   
   --radius-sm: 8px;
@@ -14,55 +13,97 @@
 }
 
 :root[data-theme="dark"], :root {
-  --bg-primary: #000000;
-  --bg-secondary: #1c1c1e;
-  --bg-card: #1c1c1e;
-  --bg-card-hover: #2c2c2e;
-  --border: #38383a;
-  --border-focus: #0a84ff;
+    --bg-primary: #0A0A0A;       --bg-secondary: #121212;     --bg-card: #121212;
+  --bg-card-hover: #1A1A1A;
+  --border: #222222;           --border-focus: #333333;
 
-  --accent: #0a84ff;
-  --accent-light: #5e5ce6;
-  --accent-dim: rgba(10, 132, 255, 0.15);
+    --accent: #EDEDED;           --accent-light: #FFFFFF;
+  --accent-dim: rgba(255, 255, 255, 0.1);
+  --accent-fg: #000000;      
+    --neon-green: #059669;
+  --neon-yellow: #D97706;
+  --neon-red: #DC2626;
+  --neon-blue: #0284C7;
+  --neon-purple: #7C3AED;
+  --neon-cyan: #0EA5E9;
 
-  --neon-green: #30d158;
-  --neon-yellow: #ffd60a;
-  --neon-red: #ff453a;
-  --neon-blue: #0a84ff;
-  --neon-purple: #bf5af2;
-  --neon-cyan: #64d2ff;
-
-  --text-primary: #ffffff;
-  --text-muted: #8e8e93;
-  --text-dim: #636366;
+    --text-primary: #EDEDED;
+  --text-secondary: #A1A1AA;
+  --text-dim: #52525B;
   
-  --material-bg: rgba(28, 28, 30, 0.75);
+  --material-bg: rgba(18, 18, 18, 0.75);
+  
+    --shadow-card: none;   --shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.4), 0 0 0 1px #222222;
+
+    --node-bg-neutral: #18181B;
+  --node-border-neutral: #3F3F46;
+  --node-text-neutral: #D4D4D8;
+  
+  --node-bg-active: #0EA5E9;
+  --node-border-active: #38BDF8;
+  --node-text-active: #FFFFFF;
+  
+  --node-bg-visited: rgba(56, 189, 248, 0.1);
+  --node-border-visited: #0284C7;
+
+  --node-bg-source: rgba(16, 185, 129, 0.1);
+  --node-border-source: #059669;
+
+  --node-bg-target: rgba(139, 92, 246, 0.1);
+  --node-border-target: #7C3AED;
+
+  --edge-neutral: #333333;
+  --edge-active: #38BDF8;
 }
 
 :root[data-theme="light"] {
-  --bg-primary: #f2f2f7;
-  --bg-secondary: #ffffff;
-  --bg-card: #ffffff;
-  --bg-card-hover: #f2f2f7;
-  --border: #e5e5ea;
-  --border-focus: #007aff;
+  --bg-primary: #F9FAFB;
+  --bg-secondary: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --bg-card-hover: #F3F4F6;
+  --border: #E5E7EB;
+  --border-focus: #D1D5DB;
 
-  --accent: #007aff;
-  --accent-light: #5856d6;
-  --accent-dim: rgba(0, 122, 255, 0.15);
+  --accent: #111827;
+  --accent-light: #374151;
+  --accent-dim: rgba(17, 24, 39, 0.1);
+  --accent-fg: #FFFFFF;
 
-  --neon-green: #34c759;
-  --neon-yellow: #ffcc00;
-  --neon-red: #ff3b30;
-  --neon-blue: #007aff;
-  --neon-purple: #af52de;
-  --neon-cyan: #32ade6;
+  --neon-green: #10B981;
+  --neon-yellow: #F59E0B;
+  --neon-red: #EF4444;
+  --neon-blue: #0284C7;
+  --neon-purple: #8B5CF6;
+  --neon-cyan: #0EA5E9;
 
-  --text-primary: #000000;
-  --text-muted: #8e8e93;
-  --text-dim: #aeaeb2;
+  --text-primary: #111827;
+  --text-muted: #6B7280;
+  --text-dim: #9CA3AF;
   
   --material-bg: rgba(255, 255, 255, 0.75);
+  
+  --shadow-card: none;
+  --shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.08), 0 0 0 1px #E5E7EB;
+
+    --node-bg-neutral: #FFFFFF;
+  --node-border-neutral: #D1D5DB;
+  --node-text-neutral: #374151;
+  
+  --node-bg-active: #0EA5E9;
+  --node-border-active: #0284C7;
+  --node-text-active: #FFFFFF;
+  
+  --node-bg-visited: rgba(14, 165, 233, 0.1);
+  --node-border-visited: #0EA5E9;
+
+  --node-bg-source: rgba(16, 185, 129, 0.1);
+  --node-border-source: #10B981;
+
+  --node-bg-target: rgba(139, 92, 246, 0.1);
+  --node-border-target: #8B5CF6;
+
+  --edge-neutral: #E5E7EB;
+  --edge-active: #0EA5E9;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -104,11 +145,22 @@ code, .mono { font-family: var(--font-mono); }
 .card {
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-sm);
   padding: 20px;
-  transition: border-color var(--transition);
+  box-shadow: var(--shadow-card);
+  transition: border-color var(--transition), transform 0.2s ease, box-shadow 0.2s ease;
 }
-.card:hover { border-color: var(--border-focus); }
+.card:hover { 
+  border-color: var(--border-focus); 
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.canvas-container {
+  background-color: var(--bg-primary);
+  background-image: radial-gradient(var(--border) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
 
 .btn {
   display: inline-flex;
@@ -122,15 +174,16 @@ code, .mono { font-family: var(--font-mono); }
   font-weight: 600;
   cursor: pointer;
   border: 1px solid transparent;
-  transition: all var(--transition);
+  transition: all var(--transition), transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
   user-select: none;
   white-space: nowrap;
 }
+.btn:active:not(:disabled) { transform: scale(0.95); }
 .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
 .btn-primary {
   background: var(--accent);
-  color: #fff;
+  color: var(--accent-fg);
 }
 .btn-primary:hover:not(:disabled) {
   background: var(--accent-light);
@@ -149,7 +202,6 @@ code, .mono { font-family: var(--font-mono); }
 
 .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
 
-/* iOS Segmented Control */
 .segmented-control {
   display: flex;
   background: var(--bg-primary);
@@ -161,7 +213,6 @@ code, .mono { font-family: var(--font-mono); }
   -webkit-overflow-scrolling: touch;
 }
 
-/* Hide scrollbar for segmented control but allow scrolling */
 .segmented-control::-webkit-scrollbar {
   display: none;
 }
@@ -193,7 +244,6 @@ code, .mono { font-family: var(--font-mono); }
   background: var(--bg-card);
   color: var(--text-primary);
   box-shadow: 0 1px 4px rgba(0,0,0,0.15);
-  font-weight: 600;
 }
 
 .btn-icon {

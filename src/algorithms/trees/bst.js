@@ -93,7 +93,7 @@ export function bstInsert(tree, rootId, target) {
 
 export function bstDelete(tree, rootId, target) {
   var frames = [];
-  var newTree = JSON.parse(JSON.stringify(tree)); // Deep copy to safely modify references
+  var newTree = JSON.parse(JSON.stringify(tree)); 
   var map = getNodes(newTree, rootId);
   var order = [];
   
@@ -139,7 +139,6 @@ export function bstDelete(tree, rootId, target) {
   
   let newRootId = rootId;
 
-  // Case 1: Leaf node OR Case 2: One child
   if (nodeToDelete.left == null || nodeToDelete.right == null) {
     var child = nodeToDelete.left != null ? nodeToDelete.left : nodeToDelete.right;
     
@@ -153,7 +152,7 @@ export function bstDelete(tree, rootId, target) {
     removeNodeFromTree(curr);
     frames.push({ highlighted: child, order: [...order], deleted: curr, action: 'Node deleted and faded out' });
   } 
-  // Case 3: Two children (find inorder successor)
+  
   else {
     var successorParent = curr;
     var successor = nodeToDelete.right;
@@ -183,8 +182,7 @@ export function bstDelete(tree, rootId, target) {
       map[successorParent].left = succChild;
       frames.push({ highlighted: curr, order: [...order], action: 'successorParent.left = successor.right' });
     }
-    
-    // Physically move successor to curr's position
+
     succNode.left = nodeToDelete.left;
     succNode.right = nodeToDelete.right;
     

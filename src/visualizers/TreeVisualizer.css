@@ -25,54 +25,54 @@
 }
 
 .tree-edge {
-  stroke: var(--border);
+  stroke: var(--edge-neutral);
   stroke-width: 3;
   transition: stroke 0.3s ease, x1 0.5s ease, y1 0.5s ease, x2 0.5s ease, y2 0.5s ease;
 }
-.tree-edge.visited { stroke: var(--accent); opacity: 0.8; }
+.tree-edge.visited { stroke: var(--edge-active); opacity: 0.8; }
 
 .tree-node {
   transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .tree-node circle {
-  fill: var(--bg-secondary);
-  stroke: var(--border);
+  fill: var(--node-bg-neutral);
+  stroke: var(--node-border-neutral);
   stroke-width: 2.5;
   transition: all 0.3s ease;
 }
 .tree-node text {
-  fill: var(--text-primary);
-  font-family: var(--font-body);
-  font-size: 14px;
+  fill: var(--node-text-neutral);
+  font-family: var(--font-mono);
+  font-size: 13px;
   font-weight: 500;
+  letter-spacing: -0.02em;
   transition: fill 0.3s ease;
 }
 
 .tree-node.search-target circle {
   stroke: var(--neon-yellow);
-  fill: rgba(255, 204, 0, 0.15);
-  stroke-dasharray: 4;
+  fill: rgba(217, 119, 6, 0.15);   stroke-dasharray: 4;
 }
 
 .tree-node.selected circle {
   stroke: var(--neon-red);
-  fill: rgba(255, 69, 58, 0.15);
+  fill: rgba(220, 38, 38, 0.15);
   stroke-dasharray: 4;
 }
 
 .tree-node.visited circle {
-  fill: var(--accent-dim);
-  stroke: var(--accent);
+  fill: var(--node-bg-visited);
+  stroke: var(--node-border-visited);
 }
-.tree-node.visited text { fill: var(--accent); font-weight: 600; }
+.tree-node.visited text { fill: var(--text-primary); font-weight: 600; }
 
 .tree-node.active circle {
-  fill: var(--accent);
-  stroke: var(--accent);
+  fill: var(--node-bg-active);
+  stroke: var(--node-border-active);
   stroke-width: 3;
 }
-.tree-node.active text { fill: #ffffff; font-weight: 600; }
+.tree-node.active text { fill: var(--node-text-active); font-weight: 600; }
 
 .tree-node.fading-out circle {
   fill: rgba(255, 69, 58, 0.15);

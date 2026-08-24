@@ -9,7 +9,6 @@ export function pathfindingTraversal(grid, startNode, endNode, isDijkstra = fals
 
   const getId = (node) => `${node.row}-${node.col}`;
 
-  // Initialize scores
   for (let r = 0; r < grid.length; r++) {
     for (let c = 0; c < grid[r].length; c++) {
       const id = `${r}-${c}`;
@@ -25,7 +24,7 @@ export function pathfindingTraversal(grid, startNode, endNode, isDijkstra = fals
   
   const heuristic = (nodeA, nodeB) => {
     if (isDijkstra) return 0;
-    // Manhattan distance
+    
     return Math.abs(nodeA.row - nodeB.row) + Math.abs(nodeA.col - nodeB.col);
   };
 
@@ -35,10 +34,10 @@ export function pathfindingTraversal(grid, startNode, endNode, isDijkstra = fals
     const neighbors = [];
     const { row, col } = node;
     const dirs = [
-      [-1, 0], // up
-      [0, 1],  // right
-      [1, 0],  // down
-      [0, -1]  // left
+      [-1, 0], 
+      [0, 1],  
+      [1, 0],  
+      [0, -1]  
     ];
     for (let i = 0; i < dirs.length; i++) {
       const nr = row + dirs[i][0];
@@ -53,7 +52,7 @@ export function pathfindingTraversal(grid, startNode, endNode, isDijkstra = fals
   };
 
   while (openSet.length > 0) {
-    // Find node in openSet with lowest fScore
+    
     let current = openSet[0];
     let currentIndex = 0;
     for (let i = 1; i < openSet.length; i++) {
@@ -67,7 +66,6 @@ export function pathfindingTraversal(grid, startNode, endNode, isDijkstra = fals
 
     const currentId = getId(current);
 
-    // If we reached the end, reconstruct path
     if (currentId === endId) {
       const path = [];
       let curr = currentId;
@@ -97,7 +95,7 @@ export function pathfindingTraversal(grid, startNode, endNode, isDijkstra = fals
 
       if (visited.has(neighborId)) continue;
 
-      const tentativeGScore = gScore[currentId] + 1; // Assuming weight of 1
+      const tentativeGScore = gScore[currentId] + 1; 
 
       if (tentativeGScore < gScore[neighborId]) {
         cameFrom[neighborId] = currentId;
@@ -118,7 +116,6 @@ export function pathfindingTraversal(grid, startNode, endNode, isDijkstra = fals
     });
   }
 
-  // No path found
   frames.push({
     visited: new Set(visited),
     frontier: new Set(),

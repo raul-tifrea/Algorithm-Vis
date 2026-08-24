@@ -283,7 +283,7 @@ const CODE_SNIPPETS = {
 
 function highlight(code) {
   let html = code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  // Support both // (JS, Java, C++) and # (Python) comments
+  
   const regex = /(\/\/[^\n]*|#[^\n]*)|('[^']*'|"[^"]*")|\b(function|return|const|let|if|else|while|for|of|new|import|export|default|continue|true|false|null|def|class|public|static|void|int|bool|size_t|std|vector|auto|decltype|ListNode|unordered_set)\b|\b(\d+)\b/g;
   
   return html.replace(regex, (match, p1, p2, p3, p4) => {
@@ -326,7 +326,6 @@ export default function LinkedListVisualizer() {
   const svgRef = useRef(null);
   const timerRef = useRef(null);
 
-  // Rendering parameters
   const startX = 80;
   const startY = 200;
   const nodeW = 50;
@@ -383,10 +382,9 @@ export default function LinkedListVisualizer() {
     return true;
   }, [resetState]);
 
-  // When playback finishes naturally
   useEffect(() => {
     if (done && pendingGlobalState) {
-      // We no longer filter out unreachable nodes so they don't mysteriously disappear
+      
       setGlobalNodes(pendingGlobalState.nodes);
       setGlobalHeadId(pendingGlobalState.headId);
       setPendingGlobalState(null);
@@ -458,8 +456,7 @@ export default function LinkedListVisualizer() {
     e.stopPropagation();
     if (playing) return;
     if (done) resetState();
-    
-    // Find the node in globalNodes or unlinkedNodes
+
     const gNode = globalNodes.find(n => n.id === id);
     const uNode = unlinkedNodes.find(n => n.id === id);
     const targetNode = gNode || uNode;
@@ -552,10 +549,10 @@ export default function LinkedListVisualizer() {
             }
         }
     } else {
-        // Dragging a global node to create/break connections
+        
         const draggedGlobal = globalNodes.find(n => n.id === draggingNodeId);
         if (draggedGlobal && !playing) {
-            // Find if dropped on another global node
+            
             let droppedOnNodeId = null;
             for (const n of globalNodes) {
                 const pos = getNodePos(n.id);
@@ -577,7 +574,6 @@ export default function LinkedListVisualizer() {
     setDraggingNodeId(null);
   };
 
-  // Determine which state to render
   const isAnimating = frames.length > 0;
   const currentFrame = isAnimating ? frames[frameIdx] : null;
   const renderNodes = currentFrame ? currentFrame.nodes : globalNodes;
@@ -593,15 +589,14 @@ export default function LinkedListVisualizer() {
   }
 
   const getNodePos = (id) => {
-    // If it's an unlinked node being dragged, use its raw x/y
+    
     const unlinked = unlinkedNodes.find(n => n.id === id);
     if (unlinked) return { x: unlinked.x, y: unlinked.y };
 
-    // Calculate indices based only on non-deleted nodes so they slide left
     const activeNodes = renderNodes.filter(n => !n.deleted);
     const idx = activeNodes.findIndex(n => n.id === id);
     if (idx === -1) {
-       // If it's a deleted node fading out, look up its original index in globalNodes
+       
        const oldIdx = globalNodes.findIndex(n => n.id === id);
        return { x: startX + oldIdx * (nodeW + gap), y: startY };
     }
@@ -693,7 +688,7 @@ export default function LinkedListVisualizer() {
               </marker>
             </defs>
 
-            {/* Draw active connection line being dragged */}
+            {}
             {isDragging && draggingNodeId && globalNodes.find(n => n.id === draggingNodeId) && (
               <line 
                 x1={getNodePos(draggingNodeId).x} 
@@ -707,7 +702,7 @@ export default function LinkedListVisualizer() {
               />
             )}
 
-            {/* Draw active nodes */}
+            {}
             {renderNodes.map(node => {
               const { x, y } = getNodePos(node.id);
               const isSelected = selectedNodeId === node.id;
@@ -720,7 +715,7 @@ export default function LinkedListVisualizer() {
               );
             })}
             
-            {/* Draw unlinked nodes */}
+            {}
             {unlinkedNodes.map(node => {
               const { x, y } = getNodePos(node.id);
               const isSelected = selectedNodeId === node.id;
@@ -732,7 +727,7 @@ export default function LinkedListVisualizer() {
               );
             })}
 
-            {/* Draw next pointers */}
+            {}
             {renderNodes.map((node, i) => {
               if (!node.nextId) return null;
               const fromPos = getNodePos(node.id);
@@ -788,7 +783,7 @@ export default function LinkedListVisualizer() {
               });
             })()}
 
-            {/* Draw variable pointer labels (Second Pass: Backgrounds on top) */}
+            {}
             {(() => {
               const pointersByNode = {};
               Object.entries(pointers).forEach(([ptrName, nodeId]) => {
@@ -813,8 +808,7 @@ export default function LinkedListVisualizer() {
             })()}
           </svg>
         </div>
-        
-        
+
         {showCode && (
           <div className="code-panel card">
             <div className="code-panel-header">

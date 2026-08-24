@@ -49,7 +49,7 @@ function buildGraph(nodes, edges, isDirected = false) {
 const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 function generateRandomGraph(algo = 'bfs') {
-  const count = 6 + Math.floor(Math.random() * 4); // 6 to 9 nodes
+  const count = 6 + Math.floor(Math.random() * 4); 
   const ids = LETTERS.slice(0, count).split('');
   const SVG_W = 700, SVG_H = 480;
   const cx = SVG_W / 2;
@@ -94,7 +94,7 @@ function generateRandomGraph(algo = 'bfs') {
     const key = [finalU, finalV].sort().join('-');
     let weight = 1 + Math.floor(Math.random() * 9);
     if (algo === 'bellmanFord' && Math.random() < 0.3) {
-      weight = -Math.floor(Math.random() * 5 + 1); // Negative weights for Bellman-Ford
+      weight = -Math.floor(Math.random() * 5 + 1); 
     }
     if (!edgeSet.has(key)) { edgeSet.add(key); edges.push([finalU, finalV, weight]); }
   };
@@ -839,8 +839,7 @@ export default function GraphVisualizer() {
   const resetGraph = useCallback(() => {
     if (playing) setPlaying(false);
     clearTimeout(timerRef.current);
-    
-    // Pass current algo to generate negative edges if needed
+
     const { nodes, edges } = generateRandomGraph(algo);
     setGraphNodes(nodes);
     setGraphEdges(edges);

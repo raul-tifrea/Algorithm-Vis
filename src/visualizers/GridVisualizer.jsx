@@ -101,7 +101,7 @@ export default function GridVisualizer() {
   const [grid, setGrid] = useState(() => createEmptyGrid());
   const [startNode, setStartNode] = useState(DEFAULT_START);
   const [endNode, setEndNode] = useState(DEFAULT_END);
-  const [dragMode, setDragMode] = useState(null); // 'draw' or 'erase'
+  const [dragMode, setDragMode] = useState(null); 
   
   const [frames, setFrames] = useState([]);
   const [frameIdx, setFrameIdx] = useState(-1);
@@ -146,11 +146,10 @@ export default function GridVisualizer() {
         if (i >= mazeFrames.length) {
           clearInterval(timer);
           setDrawingMaze(false);
-          
-          // Ensure start and end aren't walls
+
           setGrid(prev => {
              const finalGrid = [...prev];
-             // Deep copy rows to ensure immutability
+             
              const sRow = [...finalGrid[startNode.row]];
              sRow[startNode.col] = { ...sRow[startNode.col], isWall: false };
              finalGrid[startNode.row] = sRow;
@@ -167,7 +166,7 @@ export default function GridVisualizer() {
         setGrid(prev => {
           const newGrid = [...prev];
           let count = 0;
-          // Process multiple frames at once for faster animation
+          
           while (i < mazeFrames.length && count < 6) {
             const frame = mazeFrames[i];
             const newRow = [...newGrid[frame.row]];
@@ -365,7 +364,6 @@ export default function GridVisualizer() {
               onChange={e => setSpeed(+e.target.value)} />
           </div>
 
-
           <span className="ctrl-sep" />
           <button
             className={`btn btn-ghost btn-sm code-toggle ${showCode ? 'active' : ''}`}
@@ -392,7 +390,7 @@ export default function GridVisualizer() {
       )}
 
       <div className={`grid-body ${showCode ? 'with-code' : ''}`}>
-        <div className="grid-canvas card">
+        <div className="grid-canvas card canvas-container">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginBottom: '12px' }}>
             <p style={{ color: 'var(--text-dim)', fontSize: '0.85rem', userSelect: 'none', margin: 0 }}>
               Click and drag to draw walls or move the Green (Start) and Red (Target) nodes.

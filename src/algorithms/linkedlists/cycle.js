@@ -30,13 +30,11 @@ export function cycleDetection(nodesArray, headId) {
         pushFrame('Fast reached the end. No cycle.');
         break;
     }
-    
-    // Advance slow by 1
+
     const slowNode = nodes.find(n => n.id === slowId);
     slowId = slowNode.nextId;
     pushFrame('slow = slow.next');
-    
-    // Advance fast by 2
+
     const fastNodeNext = nodes.find(n => n.id === fastNode.nextId);
     fastId = fastNodeNext.nextId;
     

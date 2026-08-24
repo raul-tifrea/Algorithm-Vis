@@ -876,7 +876,7 @@ export default function TreeVisualizer() {
       )}
 
       <div className="tree-main">
-        <div className={`tree-canvas card ${quizMode ? 'quiz-active' : ''}`} style={{ position: 'relative' }}>
+        <div className={`tree-canvas card canvas-container ${quizMode ? 'quiz-active' : ''}`} style={{ position: 'relative' }}>
           <div style={{ position: 'absolute', top: 16, left: 20, zIndex: 10 }}>
             <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>
               <strong style={{ color: 'var(--text-primary)' }}>{currentFrame?.action || ''}</strong>

@@ -387,7 +387,7 @@ function getBarColor(i, frame) {
 
 function highlight(code) {
   let html = code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  // Support both // (JS, Java, C++) and # (Python) comments
+  
   const regex = /(\/\/[^\n]*|#[^\n]*)|('[^']*'|"[^"]*")|\b(function|return|const|let|if|else|while|for|of|new|import|export|default|continue|true|false|null|def|class|public|static|void|int|bool|size_t|std|vector|auto|decltype)\b|\b(\d+)\b/g;
   
   return html.replace(regex, (match, p1, p2, p3, p4) => {
@@ -483,10 +483,7 @@ export default function SortVisualizer() {
     });
   }, [frames]);
 
-
-
   const algoInfo = ALGORITHMS[algo];
-
 
   return (
     <div className="sort-vis fade-in-up">
@@ -568,7 +565,7 @@ export default function SortVisualizer() {
       )}
 
       <div className={`sort-body ${showCode ? 'with-code' : ''}`}>
-        <div className="sort-canvas card">
+        <div className="sort-canvas card canvas-container">
           <div className="bars-container">
             {displayArray.map((val, i) => (
               <div

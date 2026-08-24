@@ -16,7 +16,7 @@ export function removeDuplicates(nodesArray, headId) {
   pushFrame('Start remove duplicates', prevId, currId);
 
   const seen = new Set();
-  const visitedIds = new Set(); // To detect cycles
+  const visitedIds = new Set(); 
   
   if (currId !== null) {
     const headNode = nodes.find(n => n.id === currId);
@@ -51,7 +51,7 @@ export function removeDuplicates(nodesArray, headId) {
       pushFrame('Duplicate value found! Bypassing node.', prevId, currId);
       const prevNode = nodes.find(n => n.id === prevId);
       prevNode.nextId = currNode.nextId;
-      currNode.nextId = null; // Detach
+      currNode.nextId = null; 
       
       nodes = nodes.map(n => n.id === currId ? { ...n, deleted: true } : n);
       pushFrame('Deleted duplicate node fading out', prevId, currId);

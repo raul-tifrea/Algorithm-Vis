@@ -18,8 +18,8 @@
 }
 
 .ll-node-rect {
-  fill: var(--bg-primary);
-  stroke: var(--border);
+  fill: var(--node-bg-neutral);
+  stroke: var(--node-border-neutral);
   stroke-width: 2;
   transition: all 0.3s ease;
 }
@@ -29,27 +29,26 @@
 }
 
 .ll-node-text {
-  fill: var(--text-primary);
-  font-family: var(--font-body);
-  font-size: 16px;
+  fill: var(--node-text-neutral);
+  font-family: var(--font-mono);
+  font-size: 14px;
   font-weight: 500;
   text-anchor: middle;
   dominant-baseline: central;
 }
 
 .ll-pointer-line {
-  stroke: var(--text-dim);
+  stroke: var(--edge-neutral);
   stroke-width: 2;
   fill: none;
   transition: stroke 0.3s ease;
 }
 
 .ll-pointer-head {
-  fill: var(--text-dim);
+  fill: var(--edge-neutral);
   transition: fill 0.3s ease;
 }
 
-/* Pointer variable labels (e.g., prev, curr, next, slow, fast) */
 .ll-label-text {
   font-family: var(--font-mono);
   font-size: 13px;
@@ -62,7 +61,6 @@
   ry: 4;
 }
 
-/* Specific pointer colors */
 .ptr-prev .ll-label-text { fill: var(--neon-purple); }
 .ptr-prev .ll-label-bg { fill: rgba(167,139,250,0.12); stroke: rgba(167,139,250,0.2); stroke-width: 1; }
 
