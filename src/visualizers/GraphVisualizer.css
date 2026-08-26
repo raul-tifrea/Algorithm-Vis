@@ -250,11 +250,13 @@
   text-align: center;
 }
 
+
 .struct-item.correct {
   border-color: rgba(52,211,153,0.4);
   background: rgba(52,211,153,0.06);
 }
 .struct-item.correct .struct-val { color: var(--neon-green); }
+
 
 .graph-code-panel {
   padding: 0;
@@ -320,6 +322,7 @@
   color: var(--neon-blue);
 }
 
+/* Dijkstra Additions */
 .edge-weight {
   font-family: var(--font-mono);
   font-size: 0.75rem;
